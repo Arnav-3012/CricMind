@@ -1,0 +1,17 @@
+# Anchored with a leading slash so src/cricmind/data/ (the Python package) is NOT ignored.
+/data/
+/artifacts/
+# Local working and explanation docs: README.md is the only markdown that gets published.
+# The fixture ATTRIBUTION.md stays tracked because ODC-By 1.0 requires the credit to ship with the data.
+/docs/
+/explain/
+*.md
+!/README.md
+!/tests/fixtures/ATTRIBUTION.md
+
+.env
+.venv
+__pycache__
+.DS_Store
+.ruff_cache
+.pytest_cache
