@@ -46,17 +46,20 @@ def build_profile(processed_dir: Path | None = None, raw_dir: Path | None = None
     rest = by_competition[TOP_COMPETITIONS:]
     top = by_competition[:TOP_COMPETITIONS]
     if rest:
-        top.append({
-            "competition": f"other ({len(rest)} competitions)",
-            "matches": sum(r["matches"] for r in rest),
-            "legal_balls": sum(r["legal_balls"] for r in rest),
-        })
+        top.append(
+            {
+                "competition": f"other ({len(rest)} competitions)",
+                "matches": sum(r["matches"] for r in rest),
+                "legal_balls": sum(r["legal_balls"] for r in rest),
+            }
+        )
 
     share = "cast(count(*) * 1.0 / sum(count(*)) over ({}) as double)"
     return {
         "snapshot": _snapshot(raw_dir),
         "parse_counts": json.loads((config.REPORTS / "p1" / "parse_counts.json").read_text())
-        if (config.REPORTS / "p1" / "parse_counts.json").exists() else None,
+        if (config.REPORTS / "p1" / "parse_counts.json").exists()
+        else None,
         "totals": _rows(
             con,
             f"""select (select count(*) from m) matches, count(*) deliveries,
@@ -72,12 +75,12 @@ def build_profile(processed_dir: Path | None = None, raw_dir: Path | None = None
         "per_competition": top,
         "outcome_share_overall": _rows(
             con,
-            f"""select outcome, count(*) n, {share.format('')} share from d
+            f"""select outcome, count(*) n, {share.format("")} share from d
                 where {MODELLED} group by 1 order by n desc""",
         ),
         "outcome_share_by_phase": _rows(
             con,
-            f"""select phase, outcome, count(*) n, {share.format('partition by phase')} share from d
+            f"""select phase, outcome, count(*) n, {share.format("partition by phase")} share from d
                 where {MODELLED} group by 1, 2 order by 1, n desc""",
         ),
         # D-004 revisit trigger: is the run-out share of dismissals large in some phase?
@@ -93,9 +96,9 @@ def build_profile(processed_dir: Path | None = None, raw_dir: Path | None = None
                       count(*) filter (where venue_id is null) matches_null, count(*) matches from m""",
         )[0],
         "checks": {
-            "balls_over_budget": _rows(
-                con, "select count(*) n from d where legal_balls_remaining < 0"
-            )[0]["n"],
+            "balls_over_budget": _rows(con, "select count(*) n from d where legal_balls_remaining < 0")[0][
+                "n"
+            ],
             # Reported only: the over-length invariant was dropped (logs.md 2026-10-28).
             "unflagged_overs_over_6_legal_balls": _rows(
                 con,
