@@ -121,6 +121,23 @@ def test_venue_id_only_when_registry_has_venues():
     assert (match["venue_id"], rows[0]["venue_id"]) == ("ven1", "ven1")
 
 
+def test_venue_key_is_non_null_on_match_and_delivery_rows():
+    match, rows = parse.parse_match(_raw([[_d()]]), "m")  # venue "V", city "C", no registry venue
+    assert (match["venue_key"], rows[0]["venue_key"], match["venue_id"]) == ("v|c", "v|c", None)
+
+
+def test_venue_key_merges_spellings_and_fills_a_missing_city_via_the_alias_file():
+    spellings = [("Eden Gardens", None), ("Eden Gardens", "Kolkata"), ("Eden Gardens, Kolkata", "Kolkata")]
+    keys = {parse.parse_match(_raw([[_d()]], venue=v, city=c), "m")[0]["venue_key"] for v, c in spellings}
+    assert keys == {"eden gardens|kolkata"}
+
+
+def test_venue_key_does_not_depend_on_the_registry_id():
+    reg = {"people": PEOPLE, "venues": {"V": "ven1"}}
+    match, _ = parse.parse_match(_raw([[_d()]], registry=reg), "m")
+    assert (match["venue_id"], match["venue_key"]) == ("ven1", "v|c")
+
+
 def test_super_over_is_flagged_numbered_after_regular_innings_and_has_one_over_budget():
     so = {"team": "Y", "super_over": True, "overs": [{"over": 0, "deliveries": [_d(runs=1)]}]}
     match, rows = parse.parse_match(_raw([[_d()]], extra_innings=[so]), "m")

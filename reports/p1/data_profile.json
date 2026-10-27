@@ -539,6 +539,52 @@
     "matches_null": 10703,
     "matches": 10804
   },
+  "venues": {
+    "venue_keys": 369,
+    "raw_venue_city_pairs": 572,
+    "keys_without_city": 45,
+    "registry_ids": 29
+  },
+  "venue_names_in_several_cities": [
+    {
+      "venue": "county ground",
+      "cities": [
+        "bristol",
+        "chelmsford",
+        "derby",
+        "hove",
+        "northampton"
+      ]
+    },
+    {
+      "venue": "gymkhana club ground",
+      "cities": [
+        "dar es salaam",
+        "nairobi"
+      ]
+    },
+    {
+      "venue": "national stadium",
+      "cities": [
+        "hamilton",
+        "karachi"
+      ]
+    },
+    {
+      "venue": "nehru stadium",
+      "cities": [
+        "",
+        "kochi"
+      ]
+    },
+    {
+      "venue": "queen s park",
+      "cities": [
+        "chesterfield",
+        "invercargill"
+      ]
+    }
+  ],
   "checks": {
     "balls_over_budget": 0,
     "unflagged_overs_over_6_legal_balls": 1,

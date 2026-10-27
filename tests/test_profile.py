@@ -31,5 +31,9 @@ def test_profile_counts_on_a_tiny_match(tmp_path):
     (ro,) = p["run_out_share_by_phase"]
     assert (ro["phase"], ro["dismissals"], ro["run_outs"], ro["share"]) == ("powerplay", 2, 1, 0.5)
     assert p["venue_id_null"]["match_share"] == 1.0
+    assert p["venues"] == {
+        "venue_keys": 1, "raw_venue_city_pairs": 1, "keys_without_city": 0, "registry_ids": 0,
+    }  # fmt: skip
+    assert p["venue_names_in_several_cities"] == []
     assert p["checks"]["balls_over_budget"] == 0
     assert p["checks"]["unflagged_overs_over_6_legal_balls"] == 0

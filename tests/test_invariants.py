@@ -60,6 +60,23 @@ def test_player_ids_non_null_and_in_registry(data):
     assert not unknown, f"{len(unknown)} ids not in people.csv, e.g. {sorted(unknown)[:5]}"
 
 
+def test_venue_key_is_non_null_and_the_same_on_a_match_and_its_deliveries(data):
+    deliveries, matches = data
+    assert not deliveries["venue_key"].isna().any()
+    assert not matches["venue_key"].isna().any()
+    per_match = deliveries[["match_id", "venue_key"]].drop_duplicates()
+    joined = per_match.merge(matches[["match_id", "venue_key"]], on="match_id", suffixes=("_d", "_m"))
+    assert len(joined) == len(matches) == len(per_match)
+    assert (joined["venue_key_d"] == joined["venue_key_m"]).all()
+
+
+def test_venue_key_and_registry_venue_id_agree(data):
+    _, matches = data  # D-027: registry ids check the key (never replace it); both directions must be 1:1
+    with_id = matches.dropna(subset=["venue_id"])
+    assert (with_id.groupby("venue_key")["venue_id"].nunique() <= 1).all(), "one venue_key, two registry ids"
+    assert (with_id.groupby("venue_id")["venue_key"].nunique() == 1).all(), "one registry id, two venue_keys"
+
+
 def test_first_innings_total_plus_one_is_the_target(data):
     deliveries, matches = data
     regular = deliveries[~deliveries["is_super_over"]]

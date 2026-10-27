@@ -1,4 +1,4 @@
-"""Cricsheet JSON -> deliveries.parquet + matches.parquet (D-003, D-004, D-020..D-024).
+"""Cricsheet JSON -> deliveries.parquet + matches.parquet (D-003, D-004, D-020..D-024, D-027).
 
 uv run python -m cricmind.data.parse
 
@@ -14,6 +14,7 @@ from pathlib import Path
 import pandas as pd
 
 from cricmind import config
+from cricmind.data import venues
 
 # D-004/D-023: dismissals that are not the bowler beating the batter; the ball falls back to its runs class.
 NOT_STRIKER_WICKET = frozenset({"run out", "retired hurt", "retired out", "retired not out"})
@@ -21,16 +22,16 @@ NOT_STRIKER_WICKET = frozenset({"run out", "retired hurt", "retired out", "retir
 NOT_A_FALL = frozenset({"retired hurt", "retired not out"})
 
 DELIVERY_COLUMNS = [
-    "match_id", "match_date", "competition", "match_type", "venue_id", "innings", "is_super_over", "over",
-    "ball_seq", "legal_ball_in_over", "miscounted_balls", "batter_id", "bowler_id", "non_striker_id",
-    "runs_batter", "runs_extras", "runs_total", "non_boundary", "wides", "noballs", "byes", "legbyes",
-    "penalty", "is_legal", "n_wickets", "wicket_kind", "player_out_id", "outcome", "score_before",
+    "match_id", "match_date", "competition", "match_type", "venue_id", "venue_key", "innings",
+    "is_super_over", "over", "ball_seq", "legal_ball_in_over", "miscounted_balls", "batter_id", "bowler_id",
+    "non_striker_id", "runs_batter", "runs_extras", "runs_total", "non_boundary", "wides", "noballs", "byes",
+    "legbyes", "penalty", "is_legal", "n_wickets", "wicket_kind", "player_out_id", "outcome", "score_before",
     "wickets_before", "target", "legal_balls_remaining",
 ]  # fmt: skip
 MATCH_COLUMNS = [
     "match_id", "match_date", "season_year", "season", "competition", "event_name", "match_type", "team_type",
-    "venue_id", "venue", "city", "team1", "team2", "toss_winner", "toss_decision", "winner", "result",
-    "method", "scheduled_overs", "has_super_over", "data_version",
+    "venue_id", "venue_key", "venue", "city", "team1", "team2", "toss_winner", "toss_decision", "winner",
+    "result", "method", "scheduled_overs", "has_super_over", "data_version",
 ]  # fmt: skip
 NULLABLE_INT = ["legal_ball_in_over", "miscounted_balls", "target"]
 
@@ -81,6 +82,7 @@ def parse_match(raw: dict, match_id: str) -> tuple[dict, list[dict]]:
     info = raw["info"]
     people = info["registry"]["people"]
     venue_id = info.get("registry", {}).get("venues", {}).get(info.get("venue"))  # only v1.3.0 files carry it
+    venue_key = venues.venue_key(info.get("venue"), info.get("city"))  # D-027: the join key, venue_id is not
     per_over = info["balls_per_over"]
     competition, event_name = _competition(info)
     outcome = info.get("outcome", {})
@@ -126,6 +128,7 @@ def parse_match(raw: dict, match_id: str) -> tuple[dict, list[dict]]:
                     "competition": competition,
                     "match_type": info["match_type"],
                     "venue_id": venue_id,
+                    "venue_key": venue_key,
                     "innings": innings_no,
                     "is_super_over": is_super,
                     "over": over["over"],
@@ -166,6 +169,7 @@ def parse_match(raw: dict, match_id: str) -> tuple[dict, list[dict]]:
         "match_type": info["match_type"],
         "team_type": info["team_type"],
         "venue_id": venue_id,
+        "venue_key": venue_key,
         "venue": info.get("venue"),
         "city": info.get("city"),
         "team1": teams[0] if teams else None,

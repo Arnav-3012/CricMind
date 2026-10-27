@@ -1,0 +1,102 @@
+raw_venue,raw_city,venue_key,note
+Adelaide Oval,,adelaide oval|adelaide,city missing
+Arun Jaitley Stadium,,arun jaitley stadium|delhi,city missing
+Feroz Shah Kotla,Delhi,arun jaitley stadium|delhi,same ground renamed 2019
+"Arnos Vale Ground, Kingstown",St Vincent,arnos vale ground|kingstown,city spelling
+"Arnos Vale Ground, Kingstown, St Vincent",Kingstown,arnos vale ground|kingstown,name suffix
+"ACA Stadium, Barsapara",,barsapara cricket stadium|guwahati,same ground (ACA = Assam Cricket Association) and city missing
+Barabati Stadium,,barabati stadium|cuttack,city missing
+Bharat Ratna Shri Atal Bihari Vajpayee Ekana Cricket Stadium,,bharat ratna shri atal bihari vajpayee ekana cricket stadium|lucknow,city missing (the B ground is a different ground and stays apart)
+"Bready Cricket Club, Magheramason",Londonderry,bready cricket club magheramason|bready,city spelling
+"Brian Lara Stadium, Tarouba",Trinidad,brian lara stadium|tarouba,city spelling
+"Brian Lara Stadium, Tarouba, Trinidad",Tarouba,brian lara stadium|tarouba,name suffix
+"Brisbane Cricket Ground, Woolloongabba",Brisbane,brisbane cricket ground|brisbane,name suffix
+"Brisbane Cricket Ground, Woolloongabba, Brisbane",Brisbane,brisbane cricket ground|brisbane,name suffix
+"Buffalo Park, KuGumpo City",KuGompo City,buffalo park|east london,East London renamed KuGompo City
+Carrara Oval,,carrara oval|carrara,city missing
+"County Ground, Hove",Brighton,county ground|hove,city spelling
+County Ground,Taunton,the cooper associates county ground|taunton,sponsor name of the Taunton County Ground
+"Diamond Oval, Kimberley",Kimberley,de beers diamond oval|kimberley,short name
+"Dr DY Patil Sports Academy, Mumbai",Navi Mumbai,dr dy patil sports academy|mumbai,city spelling
+Dr. Y.S. Rajasekhara Reddy ACA VDCA Cricket Stadium,,dr y s rajasekhara reddy aca vdca cricket stadium|visakhapatnam,city missing
+Dubai International Cricket Stadium,,dubai international cricket stadium|dubai,city missing
+Eden Gardens,,eden gardens|kolkata,city missing
+"Gahanga International Cricket Stadium, Rwanda",Kigali City,gahanga international cricket stadium|kigali city,name suffix
+Gahanga International Cricket Stadium. Rwanda,Kigali City,gahanga international cricket stadium|kigali city,name suffix
+Gahanga International Cricket Stadium. Rwanda,,gahanga international cricket stadium|kigali city,name suffix and city missing
+"GMHBA Stadium, South Geelong, Victoria",Geelong,gmhba stadium|geelong,Simonds Stadium renamed GMHBA Stadium
+"Simonds Stadium, South Geelong",Victoria,gmhba stadium|geelong,Simonds Stadium renamed GMHBA Stadium
+"Simonds Stadium, South Geelong, Victoria",Geelong,gmhba stadium|geelong,Simonds Stadium renamed GMHBA Stadium
+Grand Prairie Stadium,Grand Prairie,grand prairie stadium|dallas,city spelling
+"Grange Cricket Club, Raeburn Place",Edinburgh,grange cricket club ground raeburn place|edinburgh,name spelling
+Harare Sports Club,,harare sports club|harare,city missing
+Himachal Pradesh Cricket Association Stadium,Dharmasala,himachal pradesh cricket association stadium|dharamsala,city typo
+Holkar Stadium,,holkar cricket stadium|indore,short name and city missing
+JSCA International Stadium Complex,,jsca international stadium complex|ranchi,city missing
+"Kensington Oval, Bridgetown",Barbados,kensington oval|bridgetown,city spelling
+"Kensington Oval, Bridgetown, Barbados",Bridgetown,kensington oval|bridgetown,name suffix
+The Kent County Cricket Ground,Beckenham,kent county cricket ground|beckenham,name spelling
+M Chinnaswamy Stadium,Bangalore,m chinnaswamy stadium|bengaluru,Bangalore renamed Bengaluru
+"M Chinnaswamy Stadium, Bangalore",Bengaluru,m chinnaswamy stadium|bengaluru,name suffix
+"MA Chidambaram Stadium, Chepauk",Chennai,ma chidambaram stadium|chennai,name suffix
+"MA Chidambaram Stadium, Chepauk, Chennai",Chennai,ma chidambaram stadium|chennai,name suffix
+"Maharaja Yadavindra Singh International Cricket Stadium, Mullanpur",Mohali,maharaja yadavindra singh international cricket stadium|new chandigarh,city spelling
+"Maharaja Yadavindra Singh International Cricket Stadium, Mullanpur",New Chandigarh,maharaja yadavindra singh international cricket stadium|new chandigarh,name suffix
+"Punjab Cricket Association IS Bindra Stadium, Mohali",Chandigarh,punjab cricket association is bindra stadium|chandigarh,name suffix
+"Punjab Cricket Association IS Bindra Stadium, Mohali, Chandigarh",Chandigarh,punjab cricket association is bindra stadium|chandigarh,name suffix
+"Punjab Cricket Association Stadium, Mohali",Chandigarh,punjab cricket association is bindra stadium|chandigarh,short name
+Subrata Roy Sahara Stadium,Pune,maharashtra cricket association stadium|pune,sponsor name of the MCA Stadium
+"Malahide Cricket Ground, Dublin",Dublin,the village malahide|dublin,The Village is the Malahide ground
+"Malahide, Dublin",Dublin,the village malahide|dublin,The Village is the Malahide ground
+OUTsurance Oval,Bloemfontein,mangaung oval|bloemfontein,sponsor name of Mangaung Oval
+"Mission Road Ground, Mong Kok, Hong Kong",Mong Kok,mission road ground mong kok|hong kong,name suffix
+Moara Vlasiei Cricket Ground,,moara vlasiei cricket ground|ilfov county,city missing
+"Sardar Patel Stadium, Motera",Ahmedabad,narendra modi stadium|ahmedabad,same ground renamed 2021
+"National Cricket Stadium, Grenada",St George's,national cricket stadium|st george s,name suffix
+"National Cricket Stadium, St George's",Grenada,national cricket stadium|st george s,city spelling
+"National Cricket Stadium, St George's, Grenada",St George's,national cricket stadium|st george s,name suffix
+The Wanderers Stadium,Johannesburg,new wanderers stadium|johannesburg,same ground
+"The Wanderers Stadium, Johannesburg",Johannesburg,new wanderers stadium|johannesburg,same ground
+Pallekele International Cricket Stadium,,pallekele international cricket stadium|kandy,city missing
+Melbourne Cricket Ground,,melbourne cricket ground|melbourne,city missing
+"Providence Stadium, Guyana",Providence,providence stadium|guyana,city spelling
+"Queen's Park Oval, Port of Spain",Trinidad,queen s park oval|port of spain,city spelling
+"Queen's Park Oval, Port of Spain, Trinidad",Port of Spain,queen s park oval|port of spain,name suffix
+"R.Premadasa Stadium, Khettarama",Colombo,r premadasa stadium|colombo,name suffix
+"Rajiv Gandhi International Stadium, Uppal",Hyderabad,rajiv gandhi international stadium|hyderabad,name suffix
+"Rajiv Gandhi International Stadium, Uppal, Hyderabad",Hyderabad,rajiv gandhi international stadium|hyderabad,name suffix
+Rawalpindi Cricket Stadium,,rawalpindi cricket stadium|rawalpindi,city missing
+"Sabina Park, Kingston",Jamaica,sabina park|kingston,city spelling
+"Sabina Park, Kingston, Jamaica",Kingston,sabina park|kingston,name suffix
+Sano International Cricket Ground,,sano international cricket ground|sano,city missing
+Saurashtra Cricket Association Stadium,,saurashtra cricket association stadium|rajkot,city missing
+Shaheed Veer Narayan Singh International Stadium,,shaheed veer narayan singh international stadium|raipur,city missing
+Sharjah Cricket Stadium,,sharjah cricket stadium|sharjah,city missing
+Zayed Cricket Stadium,Abu Dhabi,sheikh zayed stadium|abu dhabi,same ground
+"Zayed Cricket Stadium, Abu Dhabi",Abu Dhabi,sheikh zayed stadium|abu dhabi,same ground
+Shere Bangla National Stadium,Mirpur,shere bangla national stadium|dhaka,Mirpur is a Dhaka suburb
+"Shere Bangla National Stadium, Mirpur",Dhaka,shere bangla national stadium|dhaka,name suffix
+"Sir Vivian Richards Stadium, North Sound",Antigua,sir vivian richards stadium|north sound,city spelling
+"Sir Vivian Richards Stadium, North Sound, Antigua",North Sound,sir vivian richards stadium|north sound,name suffix
+Westpac Stadium,Wellington,sky stadium|wellington,Westpac Stadium renamed Sky Stadium
+"Sportpark Westvliet, Voorburg",The Hague,sportpark westvliet|the hague,name suffix
+"St George's Park, Gqeberha",Gqeberha,st george s park|port elizabeth,Port Elizabeth renamed Gqeberha
+Centurion Park,Centurion,supersport park|centurion,SuperSport Park is Centurion Park
+Sydney Cricket Ground,,sydney cricket ground|sydney,city missing
+Sydney Showground Stadium,,sydney showground stadium|sydney,city missing
+Sylhet International Cricket Stadium,,sylhet international cricket stadium|sylhet,city missing
+"YSD-UKM Cricket Oval, Bangi",Bangi,ukm ysd cricket oval|bangi,name order
+Uxbridge Cricket Club Ground,,uxbridge cricket club ground|uxbridge,city missing
+"Vassil Levski National Sports Academy, Sofia",Sofia,national sports academy|sofia,full name
+"Vidarbha Cricket Association Stadium, Jamtha",,vidarbha cricket association stadium jamtha|nagpur,city missing
+W.A.C.A. Ground,Perth,western australia cricket association ground|perth,WACA is the Western Australia Cricket Association Ground
+Wanderers,Windhoek,wanderers cricket ground|windhoek,short name
+Wankhede Stadium,,wankhede stadium|mumbai,city missing
+"Warner Park, Basseterre",St Kitts,warner park|basseterre,city spelling
+"Warner Park, Basseterre, St Kitts",Basseterre,warner park|basseterre,name suffix
+"Warner Park, St Kitts",Basseterre,warner park|basseterre,name suffix
+"Warner Park, Basseterre",,warner park|basseterre,city missing
+"Windsor Park, Roseau",Dominica,windsor park|roseau,city spelling
+"Windsor Park, Roseau, Dominica",Roseau,windsor park|roseau,name suffix
+Zahur Ahmed Chowdhury Stadium,Chittagong,zahur ahmed chowdhury stadium|chattogram,Chittagong renamed Chattogram
+"Zahur Ahmed Chowdhury Stadium, Chittagong",Chattogram,zahur ahmed chowdhury stadium|chattogram,name suffix

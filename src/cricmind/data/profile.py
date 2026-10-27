@@ -95,6 +95,21 @@ def build_profile(processed_dir: Path | None = None, raw_dir: Path | None = None
             """select cast(count(*) filter (where venue_id is null) * 1.0 / count(*) as double) match_share,
                       count(*) filter (where venue_id is null) matches_null, count(*) matches from m""",
         )[0],
+        # D-027: how far the alias file got. `venue_names_in_several_cities` is the review list: a name that
+        # is really one ground under two cities needs an alias row, a real clash (County Ground) does not.
+        "venues": _rows(
+            con,
+            """select count(distinct venue_key) venue_keys,
+                      (select count(*) from (select distinct venue, city from m)) raw_venue_city_pairs,
+                      count(distinct venue_key) filter (where venue_key like '%|') keys_without_city,
+                      count(distinct venue_id) registry_ids from m""",
+        )[0],
+        "venue_names_in_several_cities": _rows(
+            con,
+            """select split_part(venue_key, '|', 1) venue,
+                      list_sort(list(distinct split_part(venue_key, '|', 2))) cities
+               from m group by 1 having count(distinct venue_key) > 1 order by 1""",
+        ),
         "checks": {
             "balls_over_budget": _rows(con, "select count(*) n from d where legal_balls_remaining < 0")[0][
                 "n"
