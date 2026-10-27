@@ -28,7 +28,9 @@
     "deliveries": 2472642,
     "legal_balls": 2378783,
     "modelled_legal_balls": 2377992,
-    "super_over_rows": 860
+    "super_over_rows": 860,
+    "reduced_matches": 621,
+    "reduced_modelled_balls": 102496
   },
   "per_year": [
     {
@@ -611,7 +613,7 @@
       },
       {
         "wicket_kind": "stumped",
-        "n": 3792
+        "n": 3793
       },
       {
         "wicket_kind": "retired hurt",
@@ -623,7 +625,7 @@
       },
       {
         "wicket_kind": "retired out",
-        "n": 70
+        "n": 69
       },
       {
         "wicket_kind": "obstructing the field",
