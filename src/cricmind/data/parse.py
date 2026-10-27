@@ -66,7 +66,7 @@ def _outcome(is_legal: bool, runs_batter: int, non_boundary: bool, striker_out: 
         return None
     if striker_out:
         return "W"
-    # D-023 literal: runs_batter == 6 is "6" even if non_boundary (all-run six; ~1 in 50k balls).
+    # D-023 literal: runs_batter == 6 is "6" even if non_boundary (an all-run six; very rare).
     if runs_batter == 6:
         return "6"
     if runs_batter == 4 and not non_boundary:
@@ -98,10 +98,12 @@ def parse_match(raw: dict, match_id: str) -> tuple[dict, list[dict]]:
         is_super = bool(inn.get("super_over"))
         has_super_over |= is_super
         target = inn.get("target")
+        miscounted = {int(o): int(v["balls"]) for o, v in inn.get("miscounted_overs", {}).items()}
         budget = _balls(target["overs"], per_over) if target else info["overs"] * per_over
+        # A miscounted 7-ball over lengthens the innings; else balls_remaining goes negative (D-025).
+        budget += sum(b - per_over for b in miscounted.values())
         if is_super:
             budget = per_over
-        miscounted = {int(o): int(v["balls"]) for o, v in inn.get("miscounted_overs", {}).items()}
         ball_seq = 0
         for over in inn["overs"]:
             legal_in_over = 0

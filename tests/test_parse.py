@@ -144,6 +144,13 @@ def test_miscounted_over_accepts_str_or_int_balls():
     assert rows[6]["legal_ball_in_over"] == 7
 
 
+def test_miscounted_overs_extend_the_ball_budget():
+    inn = {"miscounted_overs": {"0": {"balls": "7"}, "4": {"balls": 7}}}
+    assert _rows([[_d()]], innings_extra=inn)[0]["ball_budget"] == 122
+    out = _derived([[_d()] * 7], innings_extra=inn)
+    assert out["legal_balls_remaining"].iloc[-1] == 116  # 122 - 6 balls already bowled; never negative
+
+
 def test_derive_state_columns_are_before_the_ball():
     bowled = [{"player_out": "A", "kind": "bowled"}]
     out = _derived([[_d(runs=4), _d(extras={"wides": 1}), _d(runs=1, wickets=bowled), _d()]])
