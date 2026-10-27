@@ -1,0 +1,600 @@
+{
+  "snapshot": {
+    "snapshot": "2026-10-28",
+    "files": {
+      "all_male_json.zip": {
+        "url": "https://cricsheet.org/downloads/all_male_json.zip",
+        "sha256": "d9c9821830336f33d84645ee522c89daf161addcbcf54f8c86b7baba824fe00d",
+        "bytes": 126826592,
+        "last_modified": "Sun, 25 Oct 2026 18:42:47 GMT",
+        "n_match_files": 18489
+      },
+      "people.csv": {
+        "url": "https://cricsheet.org/register/people.csv",
+        "sha256": "ffacf43c141d729ff3a999d6fce9a2777bd462a1bb86c086467dda88946ae990",
+        "bytes": 1186551,
+        "last_modified": "Sun, 25 Oct 2026 18:41:47 GMT"
+      }
+    }
+  },
+  "parse_counts": {
+    "files": 18489,
+    "dropped_scope": 7685,
+    "matches": 10804,
+    "deliveries": 2472642
+  },
+  "totals": {
+    "matches": 10804,
+    "deliveries": 2472642,
+    "legal_balls": 2378783,
+    "modelled_legal_balls": 2377992,
+    "super_over_rows": 860
+  },
+  "per_year": [
+    {
+      "year": 2005,
+      "matches": 3,
+      "legal_balls": 672
+    },
+    {
+      "year": 2006,
+      "matches": 8,
+      "legal_balls": 1793
+    },
+    {
+      "year": 2007,
+      "matches": 36,
+      "legal_balls": 8141
+    },
+    {
+      "year": 2008,
+      "matches": 73,
+      "legal_balls": 16191
+    },
+    {
+      "year": 2009,
+      "matches": 105,
+      "legal_balls": 23850
+    },
+    {
+      "year": 2010,
+      "matches": 121,
+      "legal_balls": 27502
+    },
+    {
+      "year": 2011,
+      "matches": 106,
+      "legal_balls": 24109
+    },
+    {
+      "year": 2012,
+      "matches": 227,
+      "legal_balls": 50606
+    },
+    {
+      "year": 2013,
+      "matches": 271,
+      "legal_balls": 62037
+    },
+    {
+      "year": 2014,
+      "matches": 372,
+      "legal_balls": 83020
+    },
+    {
+      "year": 2015,
+      "matches": 385,
+      "legal_balls": 86087
+    },
+    {
+      "year": 2016,
+      "matches": 513,
+      "legal_balls": 114581
+    },
+    {
+      "year": 2017,
+      "matches": 419,
+      "legal_balls": 92983
+    },
+    {
+      "year": 2018,
+      "matches": 631,
+      "legal_balls": 138801
+    },
+    {
+      "year": 2019,
+      "matches": 932,
+      "legal_balls": 205513
+    },
+    {
+      "year": 2020,
+      "matches": 418,
+      "legal_balls": 92088
+    },
+    {
+      "year": 2021,
+      "matches": 883,
+      "legal_balls": 196435
+    },
+    {
+      "year": 2022,
+      "matches": 964,
+      "legal_balls": 212732
+    },
+    {
+      "year": 2023,
+      "matches": 905,
+      "legal_balls": 198703
+    },
+    {
+      "year": 2024,
+      "matches": 1222,
+      "legal_balls": 264072
+    },
+    {
+      "year": 2025,
+      "matches": 1153,
+      "legal_balls": 249937
+    },
+    {
+      "year": 2026,
+      "matches": 1057,
+      "legal_balls": 228139
+    }
+  ],
+  "per_competition": [
+    {
+      "competition": "Vitality Blast",
+      "matches": 1570,
+      "legal_balls": 349165
+    },
+    {
+      "competition": "Indian Premier League",
+      "matches": 1243,
+      "legal_balls": 284465
+    },
+    {
+      "competition": "Syed Mushtaq Ali Trophy",
+      "matches": 695,
+      "legal_balls": 154334
+    },
+    {
+      "competition": "Big Bash League",
+      "matches": 662,
+      "legal_balls": 148218
+    },
+    {
+      "competition": "Bangladesh Premier League",
+      "matches": 469,
+      "legal_balls": 107246
+    },
+    {
+      "competition": "Caribbean Premier League",
+      "matches": 445,
+      "legal_balls": 98824
+    },
+    {
+      "competition": "Pakistan Super League",
+      "matches": 357,
+      "legal_balls": 80772
+    },
+    {
+      "competition": "ICC Men's T20 World Cup",
+      "matches": 334,
+      "legal_balls": 73611
+    },
+    {
+      "competition": "CSA T20 Challenge",
+      "matches": 314,
+      "legal_balls": 68721
+    },
+    {
+      "competition": "Super Smash",
+      "matches": 269,
+      "legal_balls": 58882
+    },
+    {
+      "competition": "T20I",
+      "matches": 239,
+      "legal_balls": 50508
+    },
+    {
+      "competition": "Lanka Premier League",
+      "matches": 143,
+      "legal_balls": 31634
+    },
+    {
+      "competition": "International League T20",
+      "matches": 134,
+      "legal_balls": 30159
+    },
+    {
+      "competition": "SA20",
+      "matches": 130,
+      "legal_balls": 27930
+    },
+    {
+      "competition": "Major League Cricket",
+      "matches": 109,
+      "legal_balls": 24416
+    },
+    {
+      "competition": "Major Clubs T20 Tournament",
+      "matches": 121,
+      "legal_balls": 23398
+    },
+    {
+      "competition": "Cricket Ireland Inter-Provincial Twenty20 Trophy",
+      "matches": 111,
+      "legal_balls": 23019
+    },
+    {
+      "competition": "ICC Men's T20 World Cup Qualifier",
+      "matches": 99,
+      "legal_balls": 22130
+    },
+    {
+      "competition": "ICC Men's T20 World Cup Sub Regional Africa Qualifier",
+      "matches": 115,
+      "legal_balls": 20618
+    },
+    {
+      "competition": "ICC Men's T20 World Cup Sub Regional Europe Qualifier",
+      "matches": 88,
+      "legal_balls": 18979
+    },
+    {
+      "competition": "Nepal Premier League",
+      "matches": 64,
+      "legal_balls": 14452
+    },
+    {
+      "competition": "Unknown",
+      "matches": 61,
+      "legal_balls": 13379
+    },
+    {
+      "competition": "Mzansi Super League",
+      "matches": 56,
+      "legal_balls": 12183
+    },
+    {
+      "competition": "Africa Continental Cup",
+      "matches": 56,
+      "legal_balls": 12055
+    },
+    {
+      "competition": "West Africa Trophy",
+      "matches": 39,
+      "legal_balls": 8406
+    },
+    {
+      "competition": "Valletta Cup",
+      "matches": 37,
+      "legal_balls": 8372
+    },
+    {
+      "competition": "ICC Men's T20 World Cup Sub Regional Europe Qualifier Group C",
+      "matches": 38,
+      "legal_balls": 8351
+    },
+    {
+      "competition": "Continental Cup",
+      "matches": 35,
+      "legal_balls": 7821
+    },
+    {
+      "competition": "ICC Men's T20 World Cup Sub Regional Americas Qualifier",
+      "matches": 34,
+      "legal_balls": 7381
+    },
+    {
+      "competition": "ICC Men's T20 World Cup Europe Region Qualifier",
+      "matches": 31,
+      "legal_balls": 6912
+    },
+    {
+      "competition": "ICC Men's T20 World Cup Africa Region Qualifier",
+      "matches": 33,
+      "legal_balls": 6905
+    },
+    {
+      "competition": "Quadrangular Twenty20 Series (Malaysia)",
+      "matches": 35,
+      "legal_balls": 6876
+    },
+    {
+      "competition": "ICC Men's T20 World Cup East Asia-Pacific Qualifier",
+      "matches": 32,
+      "legal_balls": 6818
+    },
+    {
+      "competition": "European T20 Premier League",
+      "matches": 31,
+      "legal_balls": 6624
+    },
+    {
+      "competition": "ICC Men's T20 World Cup Africa Region Final",
+      "matches": 29,
+      "legal_balls": 6361
+    },
+    {
+      "competition": "Nepal Tri-Nation T20I Series",
+      "matches": 28,
+      "legal_balls": 6159
+    },
+    {
+      "competition": "ICC Men's T20 World Cup Americas Region Final",
+      "matches": 31,
+      "legal_balls": 6119
+    },
+    {
+      "competition": "ICC Men's T20 World Cup Sub Regional Asia Qualifier A",
+      "matches": 30,
+      "legal_balls": 5550
+    },
+    {
+      "competition": "ICC Men's T20 World Cup Americas Region Qualifier",
+      "matches": 24,
+      "legal_balls": 5273
+    },
+    {
+      "competition": "Malaysia Tri-Nation T20I Series",
+      "matches": 24,
+      "legal_balls": 5218
+    },
+    {
+      "competition": "other (401 competitions)",
+      "matches": 2409,
+      "legal_balls": 519748
+    }
+  ],
+  "outcome_share_overall": [
+    {
+      "outcome": "1",
+      "n": 899656,
+      "share": 0.37832591531005993
+    },
+    {
+      "outcome": "dot",
+      "n": 807701,
+      "share": 0.3396567355987741
+    },
+    {
+      "outcome": "4",
+      "n": 255571,
+      "share": 0.10747344818653722
+    },
+    {
+      "outcome": "2",
+      "n": 164672,
+      "share": 0.06924834061678929
+    },
+    {
+      "outcome": "W",
+      "n": 124877,
+      "share": 0.052513633351163505
+    },
+    {
+      "outcome": "6",
+      "n": 115206,
+      "share": 0.048446756759484476
+    },
+    {
+      "outcome": "3+",
+      "n": 10309,
+      "share": 0.0043351701771915125
+    }
+  ],
+  "outcome_share_by_phase": [
+    {
+      "phase": "death",
+      "outcome": "1",
+      "n": 196574,
+      "share": 0.39039415959819435
+    },
+    {
+      "phase": "death",
+      "outcome": "dot",
+      "n": 125438,
+      "share": 0.249118716573292
+    },
+    {
+      "phase": "death",
+      "outcome": "4",
+      "n": 53905,
+      "share": 0.10705483519255174
+    },
+    {
+      "phase": "death",
+      "outcome": "2",
+      "n": 48831,
+      "share": 0.09697791776806408
+    },
+    {
+      "phase": "death",
+      "outcome": "W",
+      "n": 40225,
+      "share": 0.07988648076468591
+    },
+    {
+      "phase": "death",
+      "outcome": "6",
+      "n": 36545,
+      "share": 0.07257803454432434
+    },
+    {
+      "phase": "death",
+      "outcome": "3+",
+      "n": 2009,
+      "share": 0.003989855558887607
+    },
+    {
+      "phase": "middle",
+      "outcome": "1",
+      "n": 494840,
+      "share": 0.4473894296969155
+    },
+    {
+      "phase": "middle",
+      "outcome": "dot",
+      "n": 339527,
+      "share": 0.3069695071067509
+    },
+    {
+      "phase": "middle",
+      "outcome": "4",
+      "n": 90098,
+      "share": 0.08145843674083075
+    },
+    {
+      "phase": "middle",
+      "outcome": "2",
+      "n": 78025,
+      "share": 0.07054312555998268
+    },
+    {
+      "phase": "middle",
+      "outcome": "W",
+      "n": 50772,
+      "share": 0.04590343570562564
+    },
+    {
+      "phase": "middle",
+      "outcome": "6",
+      "n": 49109,
+      "share": 0.04439990199455546
+    },
+    {
+      "phase": "middle",
+      "outcome": "3+",
+      "n": 3690,
+      "share": 0.003336163195339136
+    },
+    {
+      "phase": "powerplay",
+      "outcome": "dot",
+      "n": 342736,
+      "share": 0.44603619970744557
+    },
+    {
+      "phase": "powerplay",
+      "outcome": "1",
+      "n": 208242,
+      "share": 0.2710058771167251
+    },
+    {
+      "phase": "powerplay",
+      "outcome": "4",
+      "n": 111568,
+      "share": 0.14519445500023426
+    },
+    {
+      "phase": "powerplay",
+      "outcome": "2",
+      "n": 37816,
+      "share": 0.049213694879256226
+    },
+    {
+      "phase": "powerplay",
+      "outcome": "W",
+      "n": 33880,
+      "share": 0.04409138942535437
+    },
+    {
+      "phase": "powerplay",
+      "outcome": "6",
+      "n": 29552,
+      "share": 0.03845893566405172
+    },
+    {
+      "phase": "powerplay",
+      "outcome": "3+",
+      "n": 4610,
+      "share": 0.005999448206932811
+    }
+  ],
+  "run_out_share_by_phase": [
+    {
+      "phase": "death",
+      "dismissals": 45573,
+      "run_outs": 5235,
+      "share": 0.11487064709367388
+    },
+    {
+      "phase": "middle",
+      "dismissals": 54127,
+      "run_outs": 3156,
+      "share": 0.058307314279379976
+    },
+    {
+      "phase": "powerplay",
+      "dismissals": 35549,
+      "run_outs": 1626,
+      "share": 0.04573968325409997
+    }
+  ],
+  "venue_id_null": {
+    "match_share": 0.9906516105146242,
+    "matches_null": 10703,
+    "matches": 10804
+  },
+  "checks": {
+    "balls_over_budget": 0,
+    "unflagged_overs_over_6_legal_balls": 1,
+    "dismissal_kinds": [
+      {
+        "wicket_kind": "caught",
+        "n": 81756
+      },
+      {
+        "wicket_kind": "bowled",
+        "n": 26072
+      },
+      {
+        "wicket_kind": "run out",
+        "n": 10045
+      },
+      {
+        "wicket_kind": "lbw",
+        "n": 9411
+      },
+      {
+        "wicket_kind": "caught and bowled",
+        "n": 4064
+      },
+      {
+        "wicket_kind": "stumped",
+        "n": 3792
+      },
+      {
+        "wicket_kind": "retired hurt",
+        "n": 185
+      },
+      {
+        "wicket_kind": "hit wicket",
+        "n": 140
+      },
+      {
+        "wicket_kind": "retired out",
+        "n": 70
+      },
+      {
+        "wicket_kind": "obstructing the field",
+        "n": 14
+      },
+      {
+        "wicket_kind": "retired not out",
+        "n": 9
+      },
+      {
+        "wicket_kind": "hit the ball twice",
+        "n": 1
+      },
+      {
+        "wicket_kind": "handled the ball",
+        "n": 1
+      }
+    ]
+  }
+}
