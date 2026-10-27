@@ -10,6 +10,13 @@ REPORTS = ROOT / "reports"
 
 SEED = 42
 
+# D-021: Cricsheet zips update daily, so one snapshot is pinned; bump only via a new D-entry.
+DATA_SNAPSHOT = "2026-10-28"
+CRICSHEET_URLS = {
+    "all_male_json.zip": "https://cricsheet.org/downloads/all_male_json.zip",  # D-020
+    "people.csv": "https://cricsheet.org/register/people.csv",
+}
+
 # D-005: temporal split by match date (season year). Never re-tune after seeing results.
 TRAIN_END_YEAR = 2023  # train: <= 2023
 VAL_YEAR = 2024
