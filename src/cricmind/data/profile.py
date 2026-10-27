@@ -65,7 +65,9 @@ def build_profile(processed_dir: Path | None = None, raw_dir: Path | None = None
             f"""select (select count(*) from m) matches, count(*) deliveries,
                        count(*) filter (where is_legal) legal_balls,
                        count(*) filter (where {MODELLED}) modelled_legal_balls,
-                       count(*) filter (where is_super_over) super_over_rows from d""",
+                       count(*) filter (where is_super_over) super_over_rows,
+                       (select count(*) from m where is_reduced) reduced_matches,
+                       count(*) filter (where {MODELLED} and is_reduced) reduced_modelled_balls from d""",
         )[0],
         "per_year": _rows(
             con,

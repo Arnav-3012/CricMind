@@ -43,6 +43,27 @@ def test_outcome_and_legal_ball_are_null_exactly_when_not_legal(data):
     assert (deliveries["legal_ball_in_over"].isna() == ~deliveries["is_legal"]).all()
 
 
+def test_a_W_ball_names_the_striker_and_a_bowler_dismissal(data):
+    deliveries, _ = data  # D-028 regression: a retirement listed first once labelled a W ball "retired hurt"
+    w = deliveries[deliveries["outcome"] == "W"]
+    assert not w["wicket_kind"].isin(list(parse.NOT_STRIKER_WICKET)).any()
+    assert (w["player_out_id"] == w["batter_id"]).all()
+
+
+def test_is_reduced_agrees_between_matches_and_deliveries(data):
+    deliveries, matches = data  # D-028
+    per_match = deliveries.groupby("match_id")["is_reduced"].agg(["min", "max"])
+    assert (per_match["min"] == per_match["max"]).all(), "is_reduced varies within a match"
+    joined = per_match["max"].rename("d").to_frame().join(matches.set_index("match_id")["is_reduced"])
+    assert (joined["d"] == joined["is_reduced"]).all()
+    assert matches.loc[matches["method"].notna(), "is_reduced"].all()
+
+
+def test_result_is_win_only_with_a_winner(data):
+    _, matches = data
+    assert matches.loc[matches["result"] == "win", "winner"].notna().all()
+
+
 def test_legal_balls_remaining_never_negative(data):
     deliveries, _ = data  # D-025 regression: miscounted overs once pushed this to -1
     assert deliveries["legal_balls_remaining"].min() >= 0
@@ -82,9 +103,9 @@ def test_first_innings_total_plus_one_is_the_target(data):
     regular = deliveries[~deliveries["is_super_over"]]
     total = regular[regular["innings"] == 1].groupby("match_id")["runs_total"].sum().rename("total")
     target = regular[regular["innings"] == 2].groupby("match_id")["target"].first()
-    check = pd.concat([total, target], axis=1).join(matches.set_index("match_id")["method"])
-    check = check[check["method"].isna()].dropna(subset=["total", "target"])  # D/L resets the target
+    check = pd.concat([total, target], axis=1).join(matches.set_index("match_id")["is_reduced"])
+    check = check[~check["is_reduced"]].dropna(subset=["total", "target"])  # a revision resets the target
     if check.empty:
-        pytest.skip("no chase without a method in this data")
+        pytest.skip("no unreduced chase in this data")
     mismatch = (check["total"] + 1 != check["target"]).mean()
     assert mismatch <= TARGET_MISMATCH_MAX, f"{mismatch:.3%} of {len(check)} matches"

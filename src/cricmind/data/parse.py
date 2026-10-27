@@ -1,4 +1,4 @@
-"""Cricsheet JSON -> deliveries.parquet + matches.parquet (D-003, D-004, D-020..D-024, D-027).
+"""Cricsheet JSON -> deliveries.parquet + matches.parquet (D-003, D-004, D-020..D-024, D-027, D-028).
 
 uv run python -m cricmind.data.parse
 
@@ -26,12 +26,12 @@ DELIVERY_COLUMNS = [
     "is_super_over", "over", "ball_seq", "legal_ball_in_over", "miscounted_balls", "batter_id", "bowler_id",
     "non_striker_id", "runs_batter", "runs_extras", "runs_total", "non_boundary", "wides", "noballs", "byes",
     "legbyes", "penalty", "is_legal", "n_wickets", "wicket_kind", "player_out_id", "outcome", "score_before",
-    "wickets_before", "target", "legal_balls_remaining",
+    "wickets_before", "target", "legal_balls_remaining", "is_reduced",
 ]  # fmt: skip
 MATCH_COLUMNS = [
     "match_id", "match_date", "season_year", "season", "competition", "event_name", "match_type", "team_type",
     "venue_id", "venue_key", "venue", "city", "team1", "team2", "toss_winner", "toss_decision", "winner",
-    "result", "method", "scheduled_overs", "has_super_over", "data_version",
+    "result", "method", "is_reduced", "scheduled_overs", "has_super_over", "data_version",
 ]  # fmt: skip
 NULLABLE_INT = ["legal_ball_in_over", "miscounted_balls", "target"]
 
@@ -61,6 +61,28 @@ def _competition(info: dict) -> tuple[str, str | None]:
     return config.COMPETITION_RENAMES.get(name, name) or "Unknown", name
 
 
+def _primary(wickets: list[dict], out_ids: list[str], batter: str) -> tuple[int, bool]:
+    """D-028: (index of the wicket that describes the ball, striker_out). Rank: striker's W dismissal, then
+    any other fall, then retirements, so a `retired hurt` listed first never hides a real dismissal."""
+    rank = [
+        (o != batter or w["kind"] in NOT_STRIKER_WICKET) + (w["kind"] in NOT_A_FALL)
+        for o, w in zip(out_ids, wickets, strict=True)
+    ]
+    i = rank.index(min(rank))
+    return i, rank[i] == 0
+
+
+def _is_reduced(raw: dict) -> bool:
+    """D-028: a D/L-style method, or a chase over a budget other than the scheduled overs. Cricsheet stores
+    only the final target, so here `target`/`legal_balls_remaining` are not what was known before the ball."""
+    info = raw["info"]
+    full = info["overs"] * info["balls_per_over"]
+    chases = [inn["target"] for inn in raw["innings"] if inn.get("target") and not inn.get("super_over")]
+    return info.get("outcome", {}).get("method") is not None or any(
+        _balls(t["overs"], info["balls_per_over"]) != full for t in chases
+    )
+
+
 def _outcome(is_legal: bool, runs_batter: int, non_boundary: bool, striker_out: bool) -> str | None:
     """D-023. Null for wides/no-balls; W only when the striker is out and it is not a run out/retirement."""
     if not is_legal:
@@ -82,10 +104,12 @@ def parse_match(raw: dict, match_id: str) -> tuple[dict, list[dict]]:
     info = raw["info"]
     people = info["registry"]["people"]
     venue_id = info.get("registry", {}).get("venues", {}).get(info.get("venue"))  # only v1.3.0 files carry it
-    venue_key = venues.venue_key(info.get("venue"), info.get("city"))  # D-027: the join key, venue_id is not
+    venue_key = venues.venue_key(info.get("venue"), info.get("city"), match_id)  # D-027: the join key
     per_over = info["balls_per_over"]
     competition, event_name = _competition(info)
     outcome = info.get("outcome", {})
+    match_date = min(info["dates"])  # ISO strings sort by date; drives the D-005 split, so never trust order
+    is_reduced = _is_reduced(raw)
 
     def pid(name: str) -> str:
         try:
@@ -118,13 +142,10 @@ def parse_match(raw: dict, match_id: str) -> tuple[dict, list[dict]]:
                 legal_in_over += is_legal
                 batter = pid(d["batter"])
                 out_ids = [pid(w["player_out"]) for w in wickets]
-                striker_out = any(
-                    o == batter and w["kind"] not in NOT_STRIKER_WICKET
-                    for o, w in zip(out_ids, wickets, strict=True)
-                )
+                main, striker_out = _primary(wickets, out_ids, batter) if wickets else (None, False)
                 rows.append({
                     "match_id": match_id,
-                    "match_date": info["dates"][0],
+                    "match_date": match_date,
                     "competition": competition,
                     "match_type": info["match_type"],
                     "venue_id": venue_id,
@@ -149,20 +170,22 @@ def parse_match(raw: dict, match_id: str) -> tuple[dict, list[dict]]:
                     "penalty": ex.get("penalty", 0),
                     "is_legal": is_legal,
                     "n_wickets": sum(w["kind"] not in NOT_A_FALL for w in wickets),
-                    "wicket_kind": wickets[0]["kind"] if wickets else None,
-                    "player_out_id": out_ids[0] if wickets else None,
+                    "wicket_kind": wickets[main]["kind"] if wickets else None,
+                    "player_out_id": out_ids[main] if wickets else None,
                     "outcome": _outcome(is_legal, runs["batter"], non_boundary, striker_out),
                     "target": None if is_super or not target else target["runs"],
                     "ball_budget": budget,
+                    "is_reduced": is_reduced,
                 })  # fmt: skip
                 ball_seq += 1
 
     teams = info.get("teams", [])
     toss = info.get("toss", {})
+    winner = outcome.get("winner") or outcome.get("eliminator") or outcome.get("bowl_out")
     match = {
         "match_id": match_id,
-        "match_date": info["dates"][0],
-        "season_year": int(info["dates"][0][:4]),  # calendar year of the match, not the season string (D-024)
+        "match_date": match_date,
+        "season_year": int(match_date[:4]),  # calendar year of the match, not the season string (D-024)
         "season": str(info["season"]),
         "competition": competition,
         "event_name": event_name,
@@ -176,9 +199,11 @@ def parse_match(raw: dict, match_id: str) -> tuple[dict, list[dict]]:
         "team2": teams[1] if len(teams) > 1 else None,
         "toss_winner": toss.get("winner"),
         "toss_decision": toss.get("decision"),
-        "winner": outcome.get("winner") or outcome.get("eliminator") or outcome.get("bowl_out"),
-        "result": outcome.get("result", "win"),
+        "winner": winner,
+        # Cricsheet omits `result` only for a decided match; with no winner either, the result is unknown
+        "result": outcome.get("result") or ("win" if winner else None),
         "method": outcome.get("method"),
+        "is_reduced": is_reduced,
         "scheduled_overs": info["overs"],
         "has_super_over": has_super_over,
         "data_version": raw["meta"]["data_version"],

@@ -25,6 +25,7 @@ def test_profile_counts_on_a_tiny_match(tmp_path):
 
     assert p["totals"]["modelled_legal_balls"] == 4  # the wide is excluded
     assert p["totals"]["deliveries"] == 5
+    assert (p["totals"]["reduced_matches"], p["totals"]["reduced_modelled_balls"]) == (0, 0)
     assert p["per_year"] == [{"year": 2024, "matches": 1, "legal_balls": 4}]
     shares = {r["outcome"]: r["n"] for r in p["outcome_share_overall"]}
     assert shares == {"dot": 2, "1": 1, "W": 1}  # a non-striker run out is not W

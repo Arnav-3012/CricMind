@@ -46,6 +46,8 @@ def load_aliases(path: Path = ALIASES_CSV) -> dict[tuple[str, str], str]:
     return aliases
 
 
-def venue_key(venue: str | None, city: str | None) -> str:
-    """Non-null key. The alias file wins over the computed default."""
-    return load_aliases().get((venue or "", city or "")) or default_key(venue, city)
+def venue_key(venue: str | None, city: str | None, match_id: str) -> str:
+    """Non-null key. The alias file wins over the computed default. No venue name -> a per-match key, so two
+    unknown grounds are never merged (a city alone does not name a ground); D-028."""
+    key = load_aliases().get((venue or "", city or "")) or default_key(venue, city)
+    return f"unknown {slug(match_id)}{key}" if key.startswith(SEP) else key

@@ -29,10 +29,18 @@ def test_default_key_is_non_null_for_missing_parts():
     assert venues.default_key("Ground", None) == "ground|"
 
 
+def test_missing_venue_name_gets_a_per_match_key_never_a_shared_one():
+    assert venues.venue_key(None, None, "123") == "unknown 123|"
+    assert venues.venue_key("", "Pune", "124") == "unknown 124|pune"
+    assert venues.venue_key(None, "Pune", "125") != venues.venue_key(None, "Pune", "126")
+    assert venues.venue_key("Ground", None, "127") == "ground|"  # a name without a city is still a ground
+
+
 def test_same_name_in_different_cities_is_not_merged():
-    keys = {venues.venue_key("County Ground", c) for c in ("Bristol", "Derby", "Hove", "Northampton")}
+    keys = {venues.venue_key("County Ground", c, "m") for c in ("Bristol", "Derby", "Hove", "Northampton")}
     assert len(keys) == 4
-    assert venues.venue_key("National Stadium", "Karachi") != venues.venue_key("National Stadium", "Hamilton")
+    karachi, hamilton = (venues.venue_key("National Stadium", c, "m") for c in ("Karachi", "Hamilton"))
+    assert karachi != hamilton
 
 
 @pytest.mark.parametrize(
@@ -48,16 +56,16 @@ def test_same_name_in_different_cities_is_not_merged():
     ],
 )  # fmt: skip
 def test_spellings_of_one_ground_share_a_key(group):
-    assert len({venues.venue_key(v, c) for v, c in group}) == 1
+    assert len({venues.venue_key(v, c, "m") for v, c in group}) == 1
 
 
 def test_alias_wins_over_the_computed_default():
     assert venues.default_key("Wankhede Stadium", None) == "wankhede stadium|"
-    assert venues.venue_key("Wankhede Stadium", None) == "wankhede stadium|mumbai"
+    assert venues.venue_key("Wankhede Stadium", None, "m") == "wankhede stadium|mumbai"
 
 
 def test_unaliased_pair_falls_back_to_default():
-    assert venues.venue_key("Some New Ground", "Some City") == "some new ground|some city"
+    assert venues.venue_key("Some New Ground", "Some City", "m") == "some new ground|some city"
 
 
 def test_alias_file_is_well_formed():

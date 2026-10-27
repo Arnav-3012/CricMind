@@ -89,6 +89,38 @@ def test_stumped_off_a_wide_keeps_wicket_but_no_outcome():
     assert (row["n_wickets"], row["wicket_kind"]) == (1, "stumped")
 
 
+def test_noball_hit_for_four_has_no_outcome_but_keeps_the_bat_runs():
+    (row,) = _rows([[_d(runs=4, extras={"noballs": 1})]])
+    assert (row["is_legal"], row["outcome"], row["runs_batter"], row["runs_total"]) == (False, None, 4, 5)
+    out = _derived([[_d(runs=4, extras={"noballs": 1}), _d()]])
+    assert out["score_before"].tolist() == [0, 5]
+    assert out["legal_balls_remaining"].tolist() == [120, 120]  # the no-ball does not use a ball
+
+
+def test_run_out_on_a_wide_is_a_fall_with_no_outcome():
+    wide_run_out = _d(extras={"wides": 1}, wickets=[{"player_out": "B", "kind": "run out"}])
+    (row,) = _rows([[wide_run_out]])
+    assert (row["is_legal"], row["outcome"], row["n_wickets"]) == (False, None, 1)
+    assert (row["wicket_kind"], row["player_out_id"]) == ("run out", "id_B")
+    out = _derived([[wide_run_out, _d()]])
+    assert out["wickets_before"].tolist() == [0, 1]
+    assert out["legal_balls_remaining"].tolist() == [120, 120]
+
+
+def test_retired_hurt_listed_first_does_not_hide_the_striker_dismissal():
+    wk = [{"player_out": "B", "kind": "retired hurt"}, {"player_out": "A", "kind": "caught"}]
+    (row,) = _rows([[_d(wickets=wk)]])
+    assert (row["outcome"], row["n_wickets"]) == ("W", 1)
+    assert (row["wicket_kind"], row["player_out_id"]) == ("caught", "id_A")  # D-028, was "retired hurt"
+
+
+def test_retired_hurt_listed_first_does_not_hide_a_run_out():
+    wk = [{"player_out": "A", "kind": "retired hurt"}, {"player_out": "B", "kind": "run out"}]
+    (row,) = _rows([[_d(runs=1, wickets=wk)]])
+    assert (row["outcome"], row["n_wickets"]) == ("1", 1)
+    assert (row["wicket_kind"], row["player_out_id"]) == ("run out", "id_B")
+
+
 def test_retired_hurt_is_not_a_fall_nor_W():
     (row,) = _rows([[_d(wickets=[{"player_out": "A", "kind": "retired hurt"}])]])
     assert (row["n_wickets"], row["outcome"], row["wicket_kind"]) == (0, "dot", "retired hurt")
@@ -203,3 +235,38 @@ def test_match_row_competition_and_scope():
 def test_season_year_is_calendar_year_of_first_date():
     match = parse.parse_match(_raw([[_d()]], dates=["2024-01-03", "2024-01-04"], season="2023/24"), "m")[0]
     assert (match["season_year"], match["season"], match["match_date"]) == (2024, "2023/24", "2024-01-03")
+
+
+def test_match_date_is_the_earliest_date_even_when_listed_out_of_order():
+    match, rows = parse.parse_match(_raw([[_d()]], dates=["2025-01-01", "2024-12-31"]), "m")
+    assert (match["match_date"], match["season_year"]) == ("2024-12-31", 2024)
+    assert rows[0]["match_date"] == "2024-12-31"
+
+
+@pytest.mark.parametrize(
+    ("outcome", "result", "winner"),
+    [({"winner": "X", "by": {"runs": 5}}, "win", "X"), ({"result": "no result"}, "no result", None),
+     ({"result": "tie", "eliminator": "Y"}, "tie", "Y"), ({}, None, None)],
+)  # fmt: skip
+def test_result_is_win_only_when_there_is_a_winner(outcome, result, winner):
+    match = parse.parse_match(_raw([[_d()]], outcome=outcome), "m")[0]
+    assert (match["result"], match["winner"]) == (result, winner)
+
+
+@pytest.mark.parametrize(
+    ("chase_overs", "method", "reduced"),
+    [(20, None, False), (12, None, True), (19.4, None, True), (20, "D/L", True), (None, None, False)],
+)  # fmt: skip
+def test_is_reduced_flags_revised_chases_on_the_match_and_every_ball(chase_overs, method, reduced):
+    outcome = {"winner": "X", "by": {"runs": 5}} | ({"method": method} if method else {})
+    chase = [] if chase_overs is None else [{"team": "Y", "target": {"overs": chase_overs, "runs": 100},
+                                             "overs": [{"over": 0, "deliveries": [_d()]}]}]  # fmt: skip
+    match, rows = parse.parse_match(_raw([[_d()]], extra_innings=chase, outcome=outcome), "m")
+    assert match["is_reduced"] is reduced
+    assert {r["is_reduced"] for r in rows} == {reduced}
+
+
+def test_super_over_target_does_not_mark_the_match_reduced():
+    so = {"team": "Y", "super_over": True, "target": {"overs": 1, "runs": 12},
+          "overs": [{"over": 0, "deliveries": [_d()]}]}  # fmt: skip
+    assert parse.parse_match(_raw([[_d()]], extra_innings=[so]), "m")[0]["is_reduced"] is False
