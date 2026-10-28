@@ -167,6 +167,15 @@ def build_profile(processed_dir: Path | None = None, raw_dir: Path | None = None
             "outcome_legal_mismatch": _rows(
                 con, "select count(*) n from d where (outcome is null) = is_legal"
             )[0]["n"],
+            # D-030: over and ball in over are kept on is_reduced rows, so their range must be clean in both
+            # groups. Ball in over can reach 7 (a miscounted over) and is never null on a modelled row.
+            "ball_position_by_reduced": _rows(
+                con,
+                f"""select is_reduced, count(*) n, min(over) min_over, max(over) max_over,
+                          min(legal_ball_in_over) min_ball, max(legal_ball_in_over) max_ball,
+                          count(*) filter (where legal_ball_in_over is null) null_ball
+                   from d where {MODELLED} group by 1 order by 1""",
+            ),
             # invariant: runs_batter + runs_extras = runs_total on every ball (test_invariants caps the rate)
             "ball_runs_mismatch": _rows(
                 con, "select count(*) n from d where runs_batter + runs_extras != runs_total"

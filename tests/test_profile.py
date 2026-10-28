@@ -55,6 +55,8 @@ def test_profile_counts_on_a_tiny_match(tmp_path):
     assert p["checks"]["duplicate_keys"] == 0
     assert p["checks"]["outcome_legal_mismatch"] == 0
     assert p["checks"]["ball_runs_mismatch"] == 0
+    (pos,) = p["checks"]["ball_position_by_reduced"]  # one group: the tiny match is not reduced
+    assert (pos["is_reduced"], pos["n"], pos["null_ball"]) == (False, 4, 0)
     assert p["checks"]["target_cross_check"]["checked"] == 0  # no second innings in the tiny match
 
 

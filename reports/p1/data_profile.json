@@ -736,6 +736,26 @@
     "unflagged_overs_over_6_legal_balls": 1,
     "duplicate_keys": 0,
     "outcome_legal_mismatch": 0,
+    "ball_position_by_reduced": [
+      {
+        "is_reduced": false,
+        "n": 2275496,
+        "min_over": 0,
+        "max_over": 19,
+        "min_ball": 1,
+        "max_ball": 7,
+        "null_ball": 0
+      },
+      {
+        "is_reduced": true,
+        "n": 102496,
+        "min_over": 0,
+        "max_over": 19,
+        "min_ball": 1,
+        "max_ball": 7,
+        "null_ball": 0
+      }
+    ],
     "ball_runs_mismatch": 0,
     "target_cross_check": {
       "checked": 9240,
