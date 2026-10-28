@@ -30,8 +30,26 @@
     "modelled_legal_balls": 2377992,
     "super_over_rows": 860,
     "reduced_matches": 621,
-    "reduced_modelled_balls": 102496
+    "reduced_modelled_balls": 102496,
+    "matches_with_method": 386
   },
+  "rows_by_split": [
+    {
+      "split": "test",
+      "matches": 2210,
+      "legal_balls": 478076
+    },
+    {
+      "split": "train",
+      "matches": 7372,
+      "legal_balls": 1635844
+    },
+    {
+      "split": "val",
+      "matches": 1222,
+      "legal_balls": 264072
+    }
+  ],
   "per_year": [
     {
       "year": 2005,
@@ -354,195 +372,321 @@
   "outcome_share_overall": [
     {
       "outcome": "1",
-      "n": 899656,
-      "share": 0.37832591531005993
+      "n": 629220,
+      "share": 0.3846454796423131
     },
     {
       "outcome": "dot",
-      "n": 807701,
-      "share": 0.3396567355987741
+      "n": 549984,
+      "share": 0.33620809808270224
     },
     {
       "outcome": "4",
-      "n": 255571,
-      "share": 0.10747344818653722
+      "n": 176107,
+      "share": 0.10765513092935512
     },
     {
       "outcome": "2",
-      "n": 164672,
-      "share": 0.06924834061678929
+      "n": 114712,
+      "share": 0.0701240460581816
     },
     {
       "outcome": "W",
-      "n": 124877,
-      "share": 0.052513633351163505
+      "n": 83577,
+      "share": 0.05109105758250787
     },
     {
       "outcome": "6",
-      "n": 115206,
-      "share": 0.048446756759484476
+      "n": 74739,
+      "share": 0.04568834192013419
     },
     {
       "outcome": "3+",
-      "n": 10309,
-      "share": 0.0043351701771915125
+      "n": 7505,
+      "share": 0.004587845784805886
     }
   ],
   "outcome_share_by_phase": [
     {
       "phase": "death",
       "outcome": "1",
-      "n": 196574,
-      "share": 0.39039415959819435
+      "n": 139341,
+      "share": 0.39738141954324563
     },
     {
       "phase": "death",
       "outcome": "dot",
-      "n": 125438,
-      "share": 0.249118716573292
+      "n": 85008,
+      "share": 0.24243115603111953
     },
     {
       "phase": "death",
       "outcome": "4",
-      "n": 53905,
-      "share": 0.10705483519255174
+      "n": 37947,
+      "share": 0.10821963906823938
     },
     {
       "phase": "death",
       "outcome": "2",
-      "n": 48831,
-      "share": 0.09697791776806408
+      "n": 34800,
+      "share": 0.09924482672081404
     },
     {
       "phase": "death",
       "outcome": "W",
-      "n": 40225,
-      "share": 0.07988648076468591
+      "n": 27489,
+      "share": 0.07839485752093267
     },
     {
       "phase": "death",
       "outcome": "6",
-      "n": 36545,
-      "share": 0.07257803454432434
+      "n": 24620,
+      "share": 0.07021286304213913
     },
     {
       "phase": "death",
       "outcome": "3+",
-      "n": 2009,
-      "share": 0.003989855558887607
+      "n": 1443,
+      "share": 0.004115238073509616
     },
     {
       "phase": "middle",
       "outcome": "1",
-      "n": 494840,
-      "share": 0.4473894296969155
+      "n": 345681,
+      "share": 0.4548260658474874
     },
     {
       "phase": "middle",
       "outcome": "dot",
-      "n": 339527,
-      "share": 0.3069695071067509
+      "n": 230043,
+      "share": 0.3026766083925745
     },
     {
       "phase": "middle",
       "outcome": "4",
-      "n": 90098,
-      "share": 0.08145843674083075
+      "n": 61643,
+      "share": 0.08110611568769087
     },
     {
       "phase": "middle",
       "outcome": "2",
-      "n": 78025,
-      "share": 0.07054312555998268
+      "n": 54385,
+      "share": 0.0715564800816811
     },
     {
       "phase": "middle",
       "outcome": "W",
-      "n": 50772,
-      "share": 0.04590343570562564
+      "n": 33698,
+      "share": 0.044337781847797915
     },
     {
       "phase": "middle",
       "outcome": "6",
-      "n": 49109,
-      "share": 0.04439990199455546
+      "n": 31902,
+      "share": 0.04197471412275058
     },
     {
       "phase": "middle",
       "outcome": "3+",
-      "n": 3690,
-      "share": 0.003336163195339136
+      "n": 2677,
+      "share": 0.003522234020017657
     },
     {
       "phase": "powerplay",
       "outcome": "dot",
-      "n": 342736,
-      "share": 0.44603619970744557
+      "n": 234933,
+      "share": 0.4473491289437455
     },
     {
       "phase": "powerplay",
       "outcome": "1",
-      "n": 208242,
-      "share": 0.2710058771167251
+      "n": 144198,
+      "share": 0.27457551597872676
     },
     {
       "phase": "powerplay",
       "outcome": "4",
-      "n": 111568,
-      "share": 0.14519445500023426
+      "n": 76517,
+      "share": 0.14570032008865752
     },
     {
       "phase": "powerplay",
       "outcome": "2",
-      "n": 37816,
-      "share": 0.049213694879256226
+      "n": 25527,
+      "share": 0.04860739536185632
     },
     {
       "phase": "powerplay",
       "outcome": "W",
-      "n": 33880,
-      "share": 0.04409138942535437
+      "n": 22390,
+      "share": 0.04263405735699311
     },
     {
       "phase": "powerplay",
       "outcome": "6",
-      "n": 29552,
-      "share": 0.03845893566405172
+      "n": 18217,
+      "share": 0.03468801352712566
     },
     {
       "phase": "powerplay",
       "outcome": "3+",
-      "n": 4610,
-      "share": 0.005999448206932811
+      "n": 3385,
+      "share": 0.006445568742895117
     }
   ],
   "run_out_share_by_phase": [
     {
       "phase": "death",
-      "dismissals": 45573,
-      "run_outs": 5235,
-      "share": 0.11487064709367388
+      "dismissals": 31266,
+      "run_outs": 3728,
+      "share": 0.11923495170472719
     },
     {
       "phase": "middle",
-      "dismissals": 54127,
-      "run_outs": 3156,
-      "share": 0.058307314279379976
+      "dismissals": 36128,
+      "run_outs": 2288,
+      "share": 0.0633303808680248
     },
     {
       "phase": "powerplay",
-      "dismissals": 35549,
-      "run_outs": 1626,
-      "share": 0.04573968325409997
+      "dismissals": 23569,
+      "run_outs": 1149,
+      "share": 0.04875047732190589
     }
   ],
+  "run_out_by_over": [
+    {
+      "over": 0,
+      "legal_balls": 87844,
+      "run_outs": 157,
+      "run_outs_per_1000_balls": 1.7872592322753973
+    },
+    {
+      "over": 1,
+      "legal_balls": 87779,
+      "run_outs": 167,
+      "run_outs_per_1000_balls": 1.9025051549915128
+    },
+    {
+      "over": 2,
+      "legal_balls": 87687,
+      "run_outs": 201,
+      "run_outs_per_1000_balls": 2.292244004242362
+    },
+    {
+      "over": 3,
+      "legal_balls": 87540,
+      "run_outs": 208,
+      "run_outs_per_1000_balls": 2.376056659812657
+    },
+    {
+      "over": 4,
+      "legal_balls": 87339,
+      "run_outs": 199,
+      "run_outs_per_1000_balls": 2.2784781140155026
+    },
+    {
+      "over": 5,
+      "legal_balls": 86978,
+      "run_outs": 217,
+      "run_outs_per_1000_balls": 2.4948837637103636
+    },
+    {
+      "over": 6,
+      "legal_balls": 86718,
+      "run_outs": 201,
+      "run_outs_per_1000_balls": 2.317857884176296
+    },
+    {
+      "over": 7,
+      "legal_balls": 86436,
+      "run_outs": 243,
+      "run_outs_per_1000_balls": 2.811328613077884
+    },
+    {
+      "over": 8,
+      "legal_balls": 85961,
+      "run_outs": 225,
+      "run_outs_per_1000_balls": 2.617466060190086
+    },
+    {
+      "over": 9,
+      "legal_balls": 85528,
+      "run_outs": 229,
+      "run_outs_per_1000_balls": 2.677485735665513
+    },
+    {
+      "over": 10,
+      "legal_balls": 84885,
+      "run_outs": 238,
+      "run_outs_per_1000_balls": 2.803793367497202
+    },
+    {
+      "over": 11,
+      "legal_balls": 84187,
+      "run_outs": 258,
+      "run_outs_per_1000_balls": 3.064606174349959
+    },
+    {
+      "over": 12,
+      "legal_balls": 83369,
+      "run_outs": 290,
+      "run_outs_per_1000_balls": 3.4785111972075953
+    },
+    {
+      "over": 13,
+      "legal_balls": 82249,
+      "run_outs": 285,
+      "run_outs_per_1000_balls": 3.4650877214312636
+    },
+    {
+      "over": 14,
+      "legal_balls": 80696,
+      "run_outs": 319,
+      "run_outs_per_1000_balls": 3.9531079607415487
+    },
+    {
+      "over": 15,
+      "legal_balls": 78578,
+      "run_outs": 335,
+      "run_outs_per_1000_balls": 4.26327979841686
+    },
+    {
+      "over": 16,
+      "legal_balls": 75926,
+      "run_outs": 361,
+      "run_outs_per_1000_balls": 4.754629507678529
+    },
+    {
+      "over": 17,
+      "legal_balls": 72393,
+      "run_outs": 462,
+      "run_outs_per_1000_balls": 6.3818324976171725
+    },
+    {
+      "over": 18,
+      "legal_balls": 66672,
+      "run_outs": 634,
+      "run_outs_per_1000_balls": 9.50923926085913
+    },
+    {
+      "over": 19,
+      "legal_balls": 57079,
+      "run_outs": 1936,
+      "run_outs_per_1000_balls": 33.91790325688957
+    }
+  ],
+  "run_out_by_role": {
+    "striker_run_outs": 3802,
+    "non_striker_run_outs": 3363
+  },
   "venue_id_null": {
     "match_share": 0.9906516105146242,
     "matches_null": 10703,
     "matches": 10804
   },
   "venues": {
-    "venue_keys": 369,
+    "venue_keys": 366,
     "raw_venue_city_pairs": 572,
     "keys_without_city": 45,
     "registry_ids": 29
@@ -590,6 +734,13 @@
   "checks": {
     "balls_over_budget": 0,
     "unflagged_overs_over_6_legal_balls": 1,
+    "duplicate_keys": 0,
+    "outcome_legal_mismatch": 0,
+    "target_cross_check": {
+      "checked": 9240,
+      "mismatched": 6,
+      "mismatch_rate": 0.0006493506493506494
+    },
     "dismissal_kinds": [
       {
         "wicket_kind": "caught",
