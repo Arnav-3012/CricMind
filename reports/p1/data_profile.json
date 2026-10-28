@@ -736,6 +736,7 @@
     "unflagged_overs_over_6_legal_balls": 1,
     "duplicate_keys": 0,
     "outcome_legal_mismatch": 0,
+    "ball_runs_mismatch": 0,
     "target_cross_check": {
       "checked": 9240,
       "mismatched": 6,
