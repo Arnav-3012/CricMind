@@ -11,6 +11,7 @@ from cricmind.data import parse
 
 FIXTURES = Path(__file__).parent / "fixtures"
 TARGET_MISMATCH_MAX = 0.005  # plan: Cricsheet stores no innings total, so target.runs - 1 is the cross-check
+BALL_RUNS_MISMATCH_MAX = 0.0001  # plan: 0.01%; a guess until the first full run shows the real rate
 
 
 @pytest.fixture(scope="module")
@@ -109,3 +110,10 @@ def test_first_innings_total_plus_one_is_the_target(data):
         pytest.skip("no unreduced chase in this data")
     mismatch = (check["total"] + 1 != check["target"]).mean()
     assert mismatch <= TARGET_MISMATCH_MAX, f"{mismatch:.3%} of {len(check)} matches"
+
+
+def test_ball_runs_add_up(data):
+    deliveries, _ = data  # runs_batter feeds the outcome classes; Cricsheet gives runs_total independently
+    bad = deliveries["runs_batter"] + deliveries["runs_extras"] != deliveries["runs_total"]
+    examples = deliveries.loc[bad, "match_id"].head(3).tolist()
+    assert bad.mean() <= BALL_RUNS_MISMATCH_MAX, f"{bad.sum()} of {len(bad)} balls, e.g. {examples}"
