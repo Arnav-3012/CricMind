@@ -9,10 +9,19 @@ from pathlib import Path
 import duckdb
 
 from cricmind import config
+from cricmind.data.download import MANIFEST
 
 # Phase boundaries (architecture.md context features): powerplay 0-5, middle 6-14, death 15-19.
 PHASE_SQL = "case when over < 6 then 'powerplay' when over < 15 then 'middle' else 'death' end"
+# D-005: split by match year (config.py). Test rows are only counted; design figures use TRAIN rows.
+SPLIT_SQL = (
+    f"case when year(match_date) <= {config.TRAIN_END_YEAR} then 'train' "
+    f"when year(match_date) = {config.VAL_YEAR} then 'val' "
+    f"when year(match_date) between {config.TEST_START_YEAR} and {config.TEST_END_YEAR} then 'test' "
+    "else 'other' end"
+)
 MODELLED = "is_legal and not is_super_over"  # the rows every later phase trains and evaluates on
+TRAIN = "split = 'train'"  # the only rows allowed to inform a design decision (D-026, the D-004 trigger)
 TOP_COMPETITIONS = 40
 
 
@@ -23,8 +32,7 @@ def _rows(con: duckdb.DuckDBPyConnection, sql: str) -> list[dict]:
 
 
 def _snapshot(raw_dir: Path) -> dict:
-    manifest = raw_dir / "MANIFEST.json"
-    return json.loads(manifest.read_text()) if manifest.exists() else {"snapshot": config.DATA_SNAPSHOT}
+    return json.loads((raw_dir / MANIFEST).read_text())  # D-021: a profile without its pin is not a report
 
 
 def build_profile(processed_dir: Path | None = None, raw_dir: Path | None = None) -> dict:
@@ -32,7 +40,7 @@ def build_profile(processed_dir: Path | None = None, raw_dir: Path | None = None
     raw_dir = raw_dir or config.DATA_RAW / config.DATA_SNAPSHOT
     con = duckdb.connect()  # in memory; the parquet files are only read
     con.execute(
-        f"create view d as select *, {PHASE_SQL} as phase "
+        f"create view d as select *, {PHASE_SQL} as phase, {SPLIT_SQL} as split "
         f"from read_parquet('{processed_dir / 'deliveries.parquet'}')"
     )
     con.execute(f"create view m as select * from read_parquet('{processed_dir / 'matches.parquet'}')")
@@ -67,8 +75,15 @@ def build_profile(processed_dir: Path | None = None, raw_dir: Path | None = None
                        count(*) filter (where {MODELLED}) modelled_legal_balls,
                        count(*) filter (where is_super_over) super_over_rows,
                        (select count(*) from m where is_reduced) reduced_matches,
-                       count(*) filter (where {MODELLED} and is_reduced) reduced_modelled_balls from d""",
+                       count(*) filter (where {MODELLED} and is_reduced) reduced_modelled_balls,
+                       (select count(*) from m where method is not null) matches_with_method from d""",
         )[0],
+        "rows_by_split": _rows(
+            con,
+            f"""select split, count(distinct match_id) matches,
+                       count(*) filter (where {MODELLED}) legal_balls
+                from d group by 1 order by 1""",
+        ),
         "per_year": _rows(
             con,
             f"""select year(match_date) as year, count(distinct match_id) matches,
@@ -78,20 +93,38 @@ def build_profile(processed_dir: Path | None = None, raw_dir: Path | None = None
         "outcome_share_overall": _rows(
             con,
             f"""select outcome, count(*) n, {share.format("")} share from d
-                where {MODELLED} group by 1 order by n desc""",
+                where {MODELLED} and {TRAIN} group by 1 order by n desc""",
         ),
         "outcome_share_by_phase": _rows(
             con,
             f"""select phase, outcome, count(*) n, {share.format("partition by phase")} share from d
-                where {MODELLED} group by 1, 2 order by 1, n desc""",
+                where {MODELLED} and {TRAIN} group by 1, 2 order by 1, n desc""",
         ),
-        # D-004 revisit trigger: is the run-out share of dismissals large in some phase?
+        # D-004 revisit trigger: is the run-out share of dismissals large in some phase? Train rows only.
         "run_out_share_by_phase": _rows(
             con,
-            """select phase, count(*) dismissals, count(*) filter (where wicket_kind = 'run out') run_outs,
+            f"""select phase, count(*) dismissals, count(*) filter (where wicket_kind = 'run out') run_outs,
                       cast(count(*) filter (where wicket_kind = 'run out') * 1.0 / count(*) as double) share
-               from d where n_wickets > 0 and not is_super_over group by 1 order by 1""",
+               from d where n_wickets > 0 and not is_super_over and {TRAIN} group by 1 order by 1""",
         ),
+        # D-026: where the run-out hazard sits (over 19 is the death-over spike). Train rows only.
+        "run_out_by_over": _rows(
+            con,
+            f"""select over, legal_balls, run_outs,
+                       cast(run_outs * 1000.0 / legal_balls as double) run_outs_per_1000_balls
+                from (select over, count(*) filter (where {MODELLED}) legal_balls,
+                             count(*) filter (where wicket_kind = 'run out'
+                                              and n_wickets > 0 and not is_super_over) run_outs
+                      from d where {TRAIN} group by 1)
+                order by over""",
+        ),
+        # D-026: striker vs non-striker run-outs (the pair-level signal D-026 dropped). Train rows only.
+        "run_out_by_role": _rows(
+            con,
+            f"""select count(*) filter (where player_out_id = batter_id) striker_run_outs,
+                      count(*) filter (where player_out_id = non_striker_id) non_striker_run_outs
+               from d where {TRAIN} and wicket_kind = 'run out' and n_wickets > 0 and not is_super_over""",
+        )[0],
         "venue_id_null": _rows(
             con,
             """select cast(count(*) filter (where venue_id is null) * 1.0 / count(*) as double) match_share,
@@ -125,6 +158,33 @@ def build_profile(processed_dir: Path | None = None, raw_dir: Path | None = None
                           and (max(miscounted_balls) is null
                                or max(miscounted_balls) != count(*) filter (where is_legal)))""",
             )[0]["n"],
+            "duplicate_keys": _rows(
+                con,
+                """select count(*) n from (select match_id, innings, ball_seq from d
+                   group by 1, 2, 3 having count(*) > 1)""",
+            )[0]["n"],
+            # invariant: outcome is null exactly when the ball is not legal (D-023)
+            "outcome_legal_mismatch": _rows(
+                con, "select count(*) n from d where (outcome is null) = is_legal"
+            )[0]["n"],
+            # invariant: runs_batter + runs_extras = runs_total on every ball (test_invariants caps the rate)
+            "ball_runs_mismatch": _rows(
+                con, "select count(*) n from d where runs_batter + runs_extras != runs_total"
+            )[0]["n"],
+            # invariant: 1st innings total + 1 = target on unreduced chases (test_invariants caps the rate)
+            "target_cross_check": _rows(
+                con,
+                """select count(*) checked, count(*) filter (where total + 1 != target) mismatched,
+                          cast(count(*) filter (where total + 1 != target) * 1.0 / nullif(count(*), 0)
+                               as double) mismatch_rate
+                   from (select i1.total, i2.target from
+                            (select match_id, sum(runs_total) total from d
+                             where innings = 1 and not is_super_over group by 1) i1
+                         join (select match_id, any_value(target) target from d
+                               where innings = 2 and not is_super_over group by 1) i2 using (match_id)
+                         join m using (match_id)
+                         where not m.is_reduced and i2.target is not null)""",
+            )[0],
             "dismissal_kinds": _rows(
                 con,
                 """select wicket_kind, count(*) n from d where wicket_kind is not null

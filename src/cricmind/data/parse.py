@@ -6,6 +6,7 @@ uv run python -m cricmind.data.parse
 `derive` adds the cumulative state columns with vectorised pandas.
 """
 
+import hashlib
 import json
 import zipfile
 from collections import Counter
@@ -15,6 +16,7 @@ import pandas as pd
 
 from cricmind import config
 from cricmind.data import venues
+from cricmind.data.download import CHUNK, MANIFEST
 
 # D-004/D-023: dismissals that are not the bowler beating the batter; the ball falls back to its runs class.
 NOT_STRIKER_WICKET = frozenset({"run out", "retired hurt", "retired out", "retired not out"})
@@ -224,10 +226,23 @@ def derive(deliveries: pd.DataFrame) -> pd.DataFrame:
     return df.astype({c: "Int64" for c in NULLABLE_INT})
 
 
+def _verify_zip(raw_dir: Path) -> None:
+    """D-021: parse only the zip whose sha256 the download manifest pinned; a swapped file fails here."""
+    zip_path = raw_dir / "all_male_json.zip"
+    expected = json.loads((raw_dir / MANIFEST).read_text())["files"]["all_male_json.zip"]["sha256"]
+    sha = hashlib.sha256()
+    with zip_path.open("rb") as f:
+        while chunk := f.read(CHUNK):
+            sha.update(chunk)
+    if sha.hexdigest() != expected:
+        raise ValueError(f"{zip_path} does not match {MANIFEST}; re-run download with --force")
+
+
 def build(raw_dir: Path | None = None, out_dir: Path | None = None) -> dict:
     """Read the pinned zip in place (D-020), write both parquet files, return counts for the data profile."""
     raw_dir = raw_dir or config.DATA_RAW / config.DATA_SNAPSHOT
     out_dir = out_dir or config.DATA_PROCESSED
+    _verify_zip(raw_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     matches, rows, counts = [], [], Counter()
