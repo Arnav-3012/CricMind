@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -26,6 +28,19 @@ def test_standardising_reweights_unreduced_cells_to_the_reduced_mix():
     assert got["unreduced_loss_at_reduced_mix"] == pytest.approx(0.25 * 1.0 + 0.75 * 3.0)
     assert got["unreduced_loss"] == pytest.approx(1.5)
     assert got["reduced_loss"] == pytest.approx(1.75)
+
+
+def test_a_cell_present_in_only_one_group_is_null_not_nan():
+    df = pd.DataFrame({
+        "cell": ["1/death", "1/death", "2/middle", "2/middle"],
+        "reduced": [False, False, False, True],
+        "loss": [1.0, 3.0, 2.0, 2.0],
+    })  # fmt: skip
+    cells = rg.standardised_unreduced(df)["cells"]
+    assert cells["1/death"]["reduced_loss"] is None and cells["1/death"]["reduced_share"] == 0
+    assert cells["1/death"]["unreduced_loss"] == pytest.approx(2.0)
+    assert cells["2/middle"]["reduced_share"] == 1.0
+    json.dumps(cells, allow_nan=False)  # no NaN leaks into the report
 
 
 def test_lgbm_can_drop_the_masked_columns():

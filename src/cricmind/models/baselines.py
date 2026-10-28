@@ -111,8 +111,14 @@ class PhaseWicketsFreq:
 
 
 class Logistic:
-    """Multinomial logistic regression. Masked numerics get the train median (no missing indicator: that
-    would be `is_reduced` by the back door); a missing phase is an all-zero one-hot row."""
+    """Multinomial logistic regression. Rows with a real phase (unreduced matches) are used as they are.
+
+    A reduced row has no phase (D-030). Encoding that as an all-zero one-hot row, or adding a missing flag,
+    would be `is_reduced` by the back door, and filling one fixed phase would bias those rows. So the phase is
+    marginalised out for those rows only: in training each one is repeated once per phase with weight equal to
+    that phase's train share, and at prediction the three predictions are averaged with the same shares.
+    lean: masked numerics (target-based) still get the train median; a linear model cannot isolate that
+    point mass the way it could the all-zero row - revisit if a variant without them scores differently."""
 
     name = "logistic"
     C_GRID = (0.01, 0.1, 1.0)  # lean: three values; at ~1.4M rows C barely moves the fit
@@ -123,15 +129,29 @@ class Logistic:
     def _levels(self, train: pd.DataFrame) -> dict[str, list[str]]:
         return {"phase": PHASES, "competition": sorted(train["competition"].dropna().unique())}
 
-    def _X(self, df: pd.DataFrame) -> np.ndarray:
+    def _X(self, df: pd.DataFrame, phase: str | None = None) -> np.ndarray:
+        """Design matrix. `phase` forces one phase on every row (used for the masked rows' copies)."""
         blocks = [self.num.transform(df[NUMERIC])]
         for col in CATEGORICAL:
-            codes = _codes(df[col], self.levels[col])
+            values = pd.Series(phase, index=df.index) if col == "phase" and phase else df[col]
+            codes = _codes(values, self.levels[col])
             onehot = np.zeros((len(df), len(self.levels[col])))
             ok = codes >= 0
             onehot[np.flatnonzero(ok), codes[ok]] = 1.0
             blocks.append(onehot)
         return np.hstack(blocks)
+
+    def _expand(self, df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Training matrix, labels and weights: unreduced rows once, each reduced row once per phase."""
+        masked = df["phase"].isna().to_numpy()
+        real, part = df[~masked], df[masked]
+        X, y, w = [self._X(real)], [real["y"].to_numpy()], [np.ones(len(real))]
+        for phase, share in zip(PHASES, self.phase_share, strict=True):
+            if masked.any():  # sklearn's transform rejects an empty frame
+                X.append(self._X(part, phase))
+                y.append(part["y"].to_numpy())
+                w.append(np.full(len(part), share))
+        return np.vstack(X), np.concatenate(y), np.concatenate(w)
 
     def tune(self, fit_part: pd.DataFrame, holdout: pd.DataFrame) -> dict[float, float]:
         """Pick C by holdout log-loss; returns the whole grid for the report."""
@@ -146,15 +166,29 @@ class Logistic:
         if self.C is None:
             raise ValueError("call tune() first or pass C")
         self.levels = self._levels(train)
+        # Phase shares from the rows that have a phase (unreduced matches); fitted on train only.
+        shares = train["phase"].value_counts(normalize=True).reindex(PHASES).fillna(0.0)
+        self.phase_share = shares.to_numpy()
         self.num = make_pipeline(SimpleImputer(strategy="median", keep_empty_features=True), StandardScaler())
         self.num.fit(train[NUMERIC])
         self.lr = LogisticRegression(C=self.C, max_iter=300, random_state=config.SEED)
-        self.lr.fit(self._X(train), train["y"])
+        X, y, w = self._expand(train)
+        self.lr.fit(X, y, sample_weight=w)
         assert list(self.lr.classes_) == list(range(K))
         return self
 
     def predict_proba(self, df: pd.DataFrame) -> np.ndarray:
-        return self.lr.predict_proba(self._X(df))
+        masked = df["phase"].isna().to_numpy()
+        out = np.empty((len(df), K))
+        if (~masked).any():
+            out[~masked] = self.lr.predict_proba(self._X(df[~masked]))
+        if masked.any():
+            part = df[masked]
+            out[masked] = sum(
+                share * self.lr.predict_proba(self._X(part, phase))
+                for phase, share in zip(PHASES, self.phase_share, strict=True)
+            )
+        return out
 
 
 class Lgbm:

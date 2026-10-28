@@ -88,9 +88,35 @@ def test_logistic_has_no_missing_indicator_for_reduced_rows():
     model = bl.Logistic(C=0.1).fit(train)
     n_features = len(NUMERIC) + len(PHASES) + len(model.levels["competition"])
     assert model.lr.coef_.shape == (K, n_features)  # no extra column that could encode is_reduced
-    reduced = train[train["is_reduced"]].head(3)
-    phase_block = model._X(reduced)[:, len(NUMERIC) : len(NUMERIC) + len(PHASES)]
-    assert phase_block.sum() == 0  # a missing phase is an all-zero one-hot row
+    X, _, w = model._expand(train)
+    phase_block = X[:, len(NUMERIC) : len(NUMERIC) + len(PHASES)]
+    assert (phase_block.sum(axis=1) == 1).all()  # no all-zero phase row: that pattern would be is_reduced
+    masked = int(train["phase"].isna().sum())
+    assert masked > 0 and len(X) == len(train) + 2 * masked  # each reduced row appears once per phase
+    assert w.sum() == pytest.approx(len(train))  # the three copies share one row's weight
+
+
+def test_logistic_phase_share_comes_from_unmasked_train_rows():
+    train = _frame(1000, 0, 2022)
+    model = bl.Logistic(C=0.1).fit(train)
+    expected = train["phase"].value_counts(normalize=True).reindex(PHASES).to_numpy()
+    np.testing.assert_allclose(model.phase_share, expected)
+    assert model.phase_share.sum() == pytest.approx(1.0)
+
+
+def test_logistic_marginalises_the_phase_only_for_reduced_rows():
+    train, val = _frame(1000, 0, 2022), _frame(300, 1, 2024)
+    model = bl.Logistic(C=0.1).fit(train)
+    P = model.predict_proba(val)
+    masked = val["phase"].isna().to_numpy()
+    part = val[masked]
+    average = sum(
+        share * model.lr.predict_proba(model._X(part, phase))
+        for phase, share in zip(PHASES, model.phase_share, strict=True)
+    )
+    np.testing.assert_allclose(P[masked], average)  # reduced rows: share-weighted average over phases
+    others = model.lr.predict_proba(model._X(val[~masked]))
+    np.testing.assert_allclose(P[~masked], others)  # unreduced rows: exactly as before
 
 
 def test_logistic_tune_picks_c_from_the_grid():

@@ -1,10 +1,11 @@
-"""Is the reduced-row log-loss gap the match mix or the features? (D-030 trigger, logs 2026-10-28)
+"""Is the reduced-row log-loss gap outcome hardness or the features? (D-030 trigger, logs 2026-10-28)
 
 uv run python -m cricmind.models.reduced_gap    # reads reports/p2/baselines.json, writes reduced_gap.json
 
 Goal link: reduced matches are 4.3% of the modelled balls the matchup model trains and is scored on. If the
-gap is the match mix, nothing needs to change; if the inputs cost accuracy there, D-030's fallback applies.
-Val is used only to report here; no choice below depends on it (tree count comes from the 2023 tuning).
+gap is outcome hardness (not the innings-phase mix, which is checked separately), nothing needs to change; if
+the inputs cost accuracy there, D-030's fallback applies. The tree count comes from the 2023 tuning, but the
+D-030 decision this supports reads val results (D-035 and the D-032 amendment say so).
 """
 
 import json
@@ -51,7 +52,7 @@ def standardised_unreduced(df: pd.DataFrame) -> dict:
     w = both[("size", True)] / both[("size", True)].sum()
     size = g["size"].fillna(0)
     share = size / size.sum()  # per group: the cell's share of that group's rows
-    mean = g["mean"].astype("object").where(g["mean"].notna(), None)
+    mean = g["mean"]  # NaN where a cell has no rows in that group; reported as null below
     return {
         "reduced_loss": float(df.loc[df["reduced"], "loss"].mean()),
         "unreduced_loss": float(df.loc[~df["reduced"], "loss"].mean()),
@@ -60,8 +61,8 @@ def standardised_unreduced(df: pd.DataFrame) -> dict:
             c: {
                 "reduced_share": float(share.loc[c, True]),
                 "unreduced_share": float(share.loc[c, False]),
-                "reduced_loss": mean.loc[c, True],
-                "unreduced_loss": mean.loc[c, False],
+                "reduced_loss": None if pd.isna(mean.loc[c, True]) else float(mean.loc[c, True]),
+                "unreduced_loss": None if pd.isna(mean.loc[c, False]) else float(mean.loc[c, False]),
             }
             for c in g.index
         },
