@@ -44,3 +44,14 @@ TEST_END_YEAR = 2026
 MIN_TRAIN_BALLS_EMBEDDING = 50
 # D-009: archetype eligibility, legal train balls (batters and bowlers separately).
 MIN_TRAIN_BALLS_ARCHETYPE = 300
+
+# D-004: class order is the label id (y = index) for every model and metric.
+OUTCOME_CLASSES = ["dot", "1", "2", "3+", "4", "6", "W"]
+
+# Phase 2 (D-032).
+TUNE_HOLDOUT_YEAR = TRAIN_END_YEAR  # tuning fits on earlier train years and scores on this one; val unused
+PHASE_EDGES = (6, 15)  # over < 6 powerplay, < 15 middle, else death (same as data/profile.py)
+WICKET_BAND_EDGES = (3, 6)  # wickets_before 0-2 / 3-5 / 6+ (a guess, not tuned)
+MIN_TRAIN_BALLS_COMPETITION = 20_000  # competitions below this share "other" in the context models (a guess)
+ECE_BINS = 15
+BOOTSTRAP_N = 1000  # resamples of matches for every CI
