@@ -1,0 +1,65 @@
+PROBLEM: lite-context cric2vec (ids + venue + over, innings, wickets_before) encodes no more player style than full-context cric2vec (probe ratio 0.122 vs 0.125); user asks whether training lite longer / changing hyperparameters would fix it, on the view that context is "cheating"
+DOMAINS: ML(representation learning, supervised embeddings) + stats(probe validity, noise ceiling) + process(pre-registration, forking paths)
+IN: reports/p3/cric2vec_lite.json, embedding_probe_lite.json, embedding_probe.json, cric2vec.json   OUT: decision: tune further | proceed to Phase 4 with current | one new pre-registered experiment   SUCCESS: a decision whose evidence cannot be produced by memorisation or by searching until a pass
+GIVENS: lite holdout loss by dim 8/16/32 = 1.4494/1.4505/1.4524, best epochs 18/13/10, cap 30, patience 3; val loss lite 1.4459 vs current ~1.4306; probe batter 0.165 vs 0.163, bowler 0.079 vs 0.087; D-041 rule -> current wins; dim 8 = lower grid edge (64 trigger not fired)
+HIDDEN_REQS: probe is train-rows-only, so any change judged by it must not be able to inflate it by fitting train labels; D-041 is pre-registered, so a new knob needs a new D-entry before the run
+ASSUMPTIONS: "cheating" means "context steals the identity signal" (explaining away), not leakage; inputs were checked as pre-ball (D-030, D-031)
+OPEN_QS: does the embedding hold style non-linearly (ridge probe misses it)? | how much of the 0.12 ceiling is per-ball noise vs objective?
+
+BIG_PICTURE: not a tuning problem. Early stopping already searched epochs (best 10-18 < cap 30), so more epochs means worse holdout loss. Lite was the experiment that tests "context steals the signal" and it came back null: removing context did not move style into the embedding. Training past the holdout optimum would raise the probe for the wrong reason, because the probe targets are the same train labels the embedding memorises.
+CUT: hypothesis cut: one leaf per claim in the user's question, plus the decision leaf
+
+LEAVES:
+[1] is lite under-trained
+  type: ML > training diagnostics > early-stopping evidence
+  why: curve per dim on the 2023 holdout, stop when best epoch is 3 behind; best epochs 18/13/10 all below cap 30 -> the optimum was reached and passed
+  why_not: under-training -> would show best epoch == cap (30) or still-falling curve; it did not
+  approaches: read epochs_by_dim vs cap (done) | save full curves and look at the tail (cheap, if doubt) | raise cap to 60 (only if best == cap)
+  pick: read the evidence: not under-trained
+  concept: early stopping = choose epochs where held-out loss is lowest; past it, train loss keeps falling while holdout rises -> the extra epochs fit noise in train labels
+  trap: "loss still falling" on train data read as "still learning"; tempting because train loss always falls
+  eval: best_epoch < cap for every dim
+  confidence: high
+[2] is context "cheating"
+  type: ML > feature attribution > explaining away (not leakage)
+  why: context inputs are known before the ball (exclusive cumsums, reduced-match masking), so no leakage; the worry was that batter_runs/balls_faced proxy the player and soak up the identity signal
+  why_not: leakage -> would need post-ball info, none present; explaining away as the main cause -> lite removed those inputs and the ratio did not rise (batter 0.163 -> 0.165, bowler 0.087 -> 0.079)
+  approaches: lite ablation (done, null) | partial ablations one input at a time (forking paths, low value) | none further
+  pick: accept the null: explaining away is not the bottleneck
+  concept: in y ~ f(e_player, x_context), if x already predicts what e would, gradient on e is small; removing x should raise what e carries. it did not -> e's limit is elsewhere (per-ball noise, objective weights)
+  trap: calling a null result "the model didn't train enough"; tempting because it keeps the hypothesis alive
+  eval: probe ratio lite - current; observed -0.003 (no change)
+  confidence: high
+[3] would more epochs raise the probe honestly
+  type: stats > validity of an evaluation > in-sample memorisation
+  why: probe target = player's style stat on train rows; embedding trained on the same train rows; overtraining lets e_player encode that player's train outcome counts including their noise
+  why_not: "higher probe = more style" -> only if the probe is out of sample; here it is in sample
+  approaches: keep D-041 epochs (honest) | out-of-time probe (embedding fit < 2023, targets from 2023 rows) | accept memorisation (invalid)
+  pick: keep holdout-chosen epochs; never tune epochs on the probe
+  concept: split-half reliability rho = 2r/(1+r) is the share of a stat's variance that is true signal; an honest probe has R^2 <= rho. a memorising embedding can fit the noise part too, so R^2/rho near or above 1 on train rows would be a memorisation tell, not style
+  trap: picking epochs by probe ratio; tempting because the probe is "the metric we care about"
+  eval: if any variant is ever judged on a probe, the probe targets come from rows the embedding never saw
+  confidence: high
+[4] what next
+  type: process > decision under a pre-registered rule
+  why: D-041(3) says Phase 4 arm = higher mean ratio -> current (0.125 > 0.122); D-041 revisit says "no better -> the data, not the objective, is the limit; say so in the overview"
+  why_not: more tuning -> each extra variant is another draw against the same lens (earlier breakdown capped variants at lite + factorisation)
+  approaches: proceed to Phase 4 with current (rule) | one pre-registered diagnostic D-042: model-implied player rates + out-of-time probe | new objective (direct per-player targets, factorisation) as its own D-entry later
+  pick: proceed with current; Phase 4 stats-vs-embedding stability decides whether the embedding arm deserves rescue
+  concept: pre-registration fixes the knobs and the reading before the run, so the result can't be argued into a pass
+  trap: running "just one more" tweak after a null; tempting because the gap feels close
+  eval: logs.md row + Phase 3 overview sentence citing the two JSON numbers
+  confidence: high
+
+DEPENDENCIES: 1 and 2 independent -> both feed 4; 3 guards any future 4 experiment
+RISKIEST_LEAF: 3 - an in-sample probe rewards memorisation, so "train longer" would look like success while encoding noise
+KEY_FORMULAS:
+rho = 2r / (1 + r)   (Spearman-Brown, r = corr of the two match-parity halves)
+probe ratio = R^2_cv / rho; mean over targets; mean over batter, bowler
+early stop: stop when epoch - argmin(curve) >= 3; epochs = argmin + 1
+GLOSSARY: explaining away=another input already predicts what the embedding would, so the embedding learns little | probe=ridge from embedding to per-player stat, CV over players | out-of-time probe=embedding fitted on earlier years, stat from a later year | model-implied rates=mean predicted class probs over a player's balls, with their embedding minus with UNK
+BRAINSTORM_SEEDS:
+- model-implied rates: if the net's own per-player predicted boundary% tracks actual well but ridge on e does not, style is in e non-linearly -> Phase 4 could cluster on model-implied rates instead of raw e
+- out-of-time probe: fit on < 2023, targets from 2023; immune to memorisation; fewer eligible players, so lower rho -- report rho too
+- the per-ball log-loss objective weights dots and singles; boundary/wicket style differs in rare classes worth few nats -> a different objective is the real lever, not epochs
+- a ratio > 1 on any future train-row probe = memorisation alarm; worth a one-line assert in embedding_probe

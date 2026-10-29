@@ -1,0 +1,50 @@
+{
+  "batter": {
+    "stats": {
+      "k": 3,
+      "ladder_step": 3,
+      "stable": false,
+      "gate_pass": false,
+      "n_players": 730,
+      "boot_ari_mean": 0.4696397108028768,
+      "seed_ari_mean": 0.9892912637199608,
+      "silhouette": 0.17804511628108702
+    },
+    "emb": {
+      "k": 10,
+      "ladder_step": 3,
+      "stable": false,
+      "gate_pass": false,
+      "n_players": 730,
+      "boot_ari_mean": 0.008792124721860712,
+      "seed_ari_mean": 0.3285252599738426,
+      "silhouette": 0.09592366963624954
+    },
+    "n_players_shared": 730,
+    "cross_rep_ari": 0.003960429905919865
+  },
+  "bowler": {
+    "stats": {
+      "k": 4,
+      "ladder_step": 3,
+      "stable": false,
+      "gate_pass": false,
+      "n_players": 829,
+      "boot_ari_mean": 0.34359890339941257,
+      "seed_ari_mean": 0.8921650804582368,
+      "silhouette": 0.13540011962319373
+    },
+    "emb": {
+      "k": 8,
+      "ladder_step": 3,
+      "stable": false,
+      "gate_pass": false,
+      "n_players": 829,
+      "boot_ari_mean": 0.005796325299447121,
+      "seed_ari_mean": 0.430096956303745,
+      "silhouette": 0.09706084430217743
+    },
+    "n_players_shared": 829,
+    "cross_rep_ari": 0.014853137239300524
+  }
+}

@@ -1,0 +1,87 @@
+PROBLEM: supervised player embeddings (cric2vec) lose to target-encoded stats and encode little player style; decide what to do so Phase 4 archetypes for batter-vs-bowler matchups rest on a sound representation
+DOMAINS: ML(representation learning, supervised embeddings) + stats(reliability, ablation) + research process(pre-registration)
+IN: Cricsheet T20 ball-by-ball, train <=2023, holdout 2023, val 2024, test 2025-26; seed-42 embeddings (dim 8); per-player stats   OUT: a player representation to cluster into archetypes + an honest account of why   SUCCESS: probe R2/reliability, bootstrap ARI of clusters, Phase 5 test matchup log-loss (touched once)
+GIVENS: ~1.6M train balls; ~1.1k batters / 1.2k bowlers with >=300 balls; val gate result cric2vec 1.4307 vs LGBM+stats 1.4246 (+0.0061 [0.0055,0.0067]); E(ids add to MLP, holdout)=0.0018 [0.0010,0.0026]; probe ratio batter 0.16, bowler 0.09; sequence gain 0.0008 (<0.002, no Phase 3b); MPS laptop
+HIDDEN_REQS: no selection on val/test (val already judged cric2vec, test is Phase 5); every variant pre-registered in decisions.md; embeddings needed only for clustering, not prediction
+ASSUMPTIONS: probe stats (SR, dot%, boundary%, wicket rate per phase) are a fair definition of "style" -> they are what the stats arm clusters on
+OPEN_QS: is a lite-context embedding more stable under bootstrap than stats vectors? | is factorising the player x phase x outcome count profile (SVD/NMF) enough to count as a "learned" arm?
+
+BIG_PICTURE: not a tuning problem; an objective problem. The embedding was trained to predict the next ball GIVEN rich context (batter_runs, balls_faced, over, bowler_balls_bowled), so the context explains away identity and the embedding keeps only the residual (what a player adds after the situation is known). Archetypes need style, which the context partly absorbed. Per-player target-encoded rates are near-sufficient statistics of each player's outcome distribution, and the data's own noise caps any representation.
+CUT: diagnosis ladder: broken? -> where is the loss? -> why? -> what does the data allow? -> how to judge a fix -> how to act honestly. Leaves 1,2,5 done; 3,4,6 open.
+
+LEAVES:
+[1] bug or real result
+  type: verification > sanity ladder
+  why: a loss to a baseline can be a bug or a real finding; the fix differs
+  why_not: retuning -> premature until a bug is ruled out
+  approaches: beats trivial baselines | seed agreement | overfit one batch
+  pick: all three (done): 1.4307 < phase 1.4661 and logistic 1.4440; seed spread 0.0004; overfit test passes
+  concept: a broken model loses to trivial baselines or disagrees across seeds; a weak one does neither
+  trap: endless debugging of a correct model because "it lost"
+  eval: all three checks pass
+  confidence: high
+[2] gap attribution
+  type: experimental design > ablation / additive decomposition
+  why: the gate gap mixes model family (MLP vs trees) with representation (embeddings vs rates)
+  why_not: one more val run -> cannot separate the two effects
+  approaches: no-identity MLP on holdout (cheap, done) | no-identity LGBM on holdout (completes the 2x2) | full 2x2 with seeds
+  pick: no-identity MLP (done): E=0.0018; MLP w/o ids 1.4389 vs LGBM+stats 1.4320 on holdout -> most of the gap is W
+  concept: gap = -E + W + S; E = embeddings' gain, W = MLP worse on context than trees, S = stats' gain to trees (~0.0059 on val)
+  trap: "lost the gate" read as "embeddings useless"
+  eval: paired bootstrap over matches, holdout only
+  confidence: med - exact W needs a no-identity LGBM on the holdout
+[3] objective mismatch (core)
+  type: representation learning > supervised embedding > explaining-away by context
+  why: probe ratio 0.16/0.09 while E > 0 -> embedding holds a thin residual, not style
+  why_not: bigger dim -> holdout picked the smallest (8) | more epochs -> early stopping already chose | transformer -> sequence gain 0.0008 < 0.002
+  approaches: lite-context MLP (ids + phase only; original pitcher2vec) (cheap, closest to cited method) | factorise player x phase x outcome counts with SVD/NMF (no NN, transparent) | multi-task style heads / contrastive halves (only if both fail; many knobs)
+  pick: lite-context first, factorisation as the one cheap alternative; nothing else
+  concept: a supervised embedding learns what reduces loss given the other inputs; remove the inputs that proxy identity and the embedding must carry the player's outcome distribution
+  trap: judging lite-context by log-loss; it will predict worse and that is expected
+  eval: probe ratio, bootstrap ARI; holdout/train only
+  confidence: med - lite-context may still be capped by noise (leaf 5)
+[4] judging a representation
+  type: evaluation > linear probe + clustering stability + downstream
+  why: three different questions: knows style? stable groups? helps matchups?
+  why_not: val log-loss -> wrong objective and already spent
+  approaches: probe R2/reliability | bootstrap ARI (Phase 4) | Phase 5 test log-loss once
+  pick: all three, in that order, rules written before running
+  concept: probe = CV R2 of style stats from embedding / ceiling; ARI = agreement of clusterings across resampled data
+  trap: trying several variants and reporting the best (garden of forking paths)
+  eval: pre-registered thresholds in decisions.md
+  confidence: high
+[5] noise ceiling
+  type: stats > measurement reliability (split-half + Spearman-Brown)
+  why: per-player stats come from a few hundred balls; R2 cannot beat their reliability
+  why_not: blaming the model -> the data caps it
+  approaches: split-half by match parity (done) | bootstrap reliability | shrink stats toward population
+  pick: split-half (done): SR/boundary% ~0.6-0.7, bowler wicket rate 0.11-0.15
+  concept: rho = 2r/(1+r); max achievable R2 ~ rho
+  trap: using wicket rate as an archetype axis for bowlers
+  eval: reliability per stat reported alongside probe R2
+  confidence: high
+[6] process and reporting
+  type: research process > pre-registration + honest negative result
+  why: every step so far decided by a rule fixed beforehand; keep that property
+  why_not: drop the embedding arm -> loses half the research question | tune until it wins -> biased
+  approaches: report as is | one pre-registered variant + report both | open-ended search (reject)
+  pick: one pre-registered variant (lite-context), stats archetypes primary
+  concept: a result chosen after seeing outcomes cannot be tested by the same outcomes
+  trap: moving thresholds after the number arrives
+  eval: D-entry dated before the run; logs row with the outcome
+  confidence: high
+
+DEPENDENCIES: 1->2->3; 5->3,4; 3->4->6
+RISKIEST_LEAF: 3 - procedurally: each extra variant is another lottery draw; cap at lite-context + factorisation, judged on probe and stability, never on val/test
+KEY_FORMULAS:
+gap = (L_M1 - L_M0) + (L_M0 - L_T0) + (L_T0 - L_T1) = -E + W + S
+rho = 2r / (1 + r)   (Spearman-Brown, r = split-half correlation)
+probe ratio = CV_R2 / rho
+logloss = -(1/N) sum_i ln p_i(y_i)
+GLOSSARY: E=log-loss gain from player ids in the MLP; W=MLP-vs-trees gap on context alone; S=stats' gain to trees; explaining away=network uses the easier of two redundant inputs; lite-context=embedding model with ids + phase only; ARI=adjusted Rand index; holdout=2023 train year used for every choice
+BRAINSTORM_SEEDS:
+- report the negative result as a finding: per-player rates ~ sufficient statistics; learned embeddings add 0.0018 and little style at this data size
+- lite-context embeddings may cluster MORE stably than stats if they denoise via sharing across players; test it, don't assume it
+- factorising outcome-count profiles gives a learned arm with no NN and is fast to defend in a viva
+- drop low-reliability stats (bowler wicket rate) from the archetype feature set, or shrink them, before Phase 4
+- complete the 2x2 with a no-identity LGBM on the holdout to state W exactly in the explain doc

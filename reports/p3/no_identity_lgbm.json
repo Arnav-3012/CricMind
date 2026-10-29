@@ -1,0 +1,30 @@
+{
+  "holdout_year": 2023,
+  "holdout_log_loss": {
+    "tree_without_stats": 1.4384012636809476,
+    "tree_with_stats": 1.4320391748027388
+  },
+  "trees": {
+    "without_stats": 141,
+    "with_stats": 188
+  },
+  "G_without_minus_with_stats": {
+    "value": 0.006362088878208697,
+    "lo": 0.005565887010418068,
+    "hi": 0.007196816725938912,
+    "width": 0.0016309297155208445
+  },
+  "mlp_holdout_log_loss": {
+    "with_ids": 1.4370888151885157,
+    "without_ids": 1.438881801476399
+  },
+  "split": {
+    "C_context_gap": 0.00048053779545154107,
+    "G_tree_identity_gain": 0.0063620888782087714,
+    "E_mlp_identity_gain": 0.0017929862878833802,
+    "I_identity_extraction_gap": 0.004569102590325391,
+    "gap_on_holdout": 0.005049640385776932,
+    "larger_source": "identity_extraction"
+  },
+  "tie_margin": 0.001
+}

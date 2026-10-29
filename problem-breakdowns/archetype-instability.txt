@@ -1,0 +1,94 @@
+PROBLEM: Phase 4 k-means archetypes fail the bootstrap-ARI >= 0.6 gate in every cell after the full D-044 ladder; which fixes are legitimate, and what does Phase 5 use?
+DOMAINS: ML(unsupervised clust, cluster validity) + stats(bootstrap, forking paths) + project(pre-registration, D-044)
+IN: 12-dim shrunk per-phase stats vectors, 8-dim cric2vec embeddings; 730 batters / 829 bowlers at >= 500 train balls; 20 match-bootstrap resamples (both arms)
+OUT: a defensible decision on the archetype labels Phase 5's matchup table uses, plus any fix with its own D-entry
+SUCCESS: Phase 5 val/test log-loss of the matchup table (the project goal); stability matters only as far as it makes cells mean the same thing across samples
+GIVENS (reports/p4/clusters.json, comparison.json):
+- stats batter: k=3, boot ARI 0.47 (best of k), seed ARI 0.99, silhouette 0.16-0.18
+- stats bowler: k=4, boot ARI 0.34, seed ARI 0.89, silhouette 0.13-0.14
+- emb batter: k=10, boot ARI 0.009, seed ARI 0.33, silhouette 0.09
+- emb bowler: k=8, boot ARI 0.006, seed ARI 0.43, silhouette 0.10
+- cross-rep ARI (stats vs emb labels, same players): 0.004 batter, 0.015 bowler
+- all cells: ladder step 3 (500 balls + PCA 90%), stable=false; boot ARI falls monotonically with k for stats
+- D-045 UNK fallbacks: 81/65 at floor 150, 0 at 300 and 500 -> the chosen cells are not contaminated
+HIDDEN_REQS: any change after seeing these numbers is post-hoc; D-044 says the method never switches; test seasons untouched
+ASSUMPTIONS: code is correct (seed ARI 0.99 on stats batter shows the pipeline is deterministic and the k-means optimum is found; the instability is in the data, not the code)
+OPEN_QS: does Phase 5 need stable labels, or only labels that pool similar players? does any single cluster survive (clusterwise Jaccard)?
+
+BIG_PICTURE: The data has no discrete player types at this size. Silhouette < 0.25 everywhere = "no substantial structure" (Kaufman-Rousseeuw scale). With seed ARI ~0.99 but boot ARI ~0.4, the fit is fully repeatable on fixed data but the boundaries move when the data is resampled: k-means is cutting a continuum, and cuts through dense regions are unstable by construction (Ben-David & von Luxburg 2008). Embeddings carry almost no player style (Phase 3 probe ratio < 0.2, D-043), so their clusters are noise (ARI ~0). No feature or method fix creates types that are not there; fixes can only make a partition of a continuum more repeatable.
+CUT: diagnose -> per-cluster check -> representation fixes -> method fixes -> reframe for Phase 5 -> embedding arm
+
+LEAVES:
+[1] Is there cluster structure at all
+  type: stats > cluster validity > internal index + resampling stability
+  why: silhouette 0.10-0.18 (< 0.25), boot ARI decreasing in k, seed ARI high
+  why_not: bug -> seed ARI 0.99 and stable blobs test pass | too few resamples -> B=20 gives a tight mean, the gap to 0.6 is large
+  approaches: read the existing numbers (done) | gap statistic / dip test of unimodality on the first PCs (when a formal null is wanted)
+  pick: read existing numbers; verdict = continuum
+  concept: silhouette s_i = (b_i - a_i)/max(a_i,b_i), a = mean dist to own cluster, b = to nearest other; mean < 0.25 = no real separation. ARI = agreement of two partitions corrected for chance; 0 = random, 1 = identical
+  trap: reading "unstable" as "broken code" and patching code
+  eval: none needed beyond the reports
+  confidence: high
+[2] Which clusters (if any) survive
+  type: stats > clusterwise stability > bootstrap Jaccard (Hennig)
+  why: a partition ARI of 0.47 can hide one stable cluster (e.g. powerplay hitters) and two that dissolve
+  why_not: global ARI only -> averages away the useful cluster
+  approaches: clusterwise Jaccard on the same 20 resamples (cheap) | fpc-style B=100
+  pick: clusterwise Jaccard, diagnostic only, reading fixed before running: >= 0.75 stable, 0.6-0.75 pattern, <= 0.5 dissolved (Hennig / fpc)
+  concept: for each reference cluster C, J = max over bootstrap clusters D of |C n D| / |C u D|; mean over resamples
+  trap: then keeping only stable clusters and calling the gate passed (changes the method after the fact)
+  eval: per-cluster mean J in clusters.json
+  confidence: high
+[3] Representation fixes (stats arm)
+  type: FE > denoising > feature selection / shrinkage
+  why: per-phase rates on a few hundred balls are noisy (Phase 3 probe: split-half reliability); noise moves points across boundaries
+  why_not: PCA 90% already tried (ladder step 2) and did not help
+  approaches: drop low-reliability dims (dismissal rate per phase) | stronger shrinkage m | phase-pooled 4-dim vector | higher floor (1000 balls)
+  pick: none now; each is a knob tuned against the same bootstrap -> forking paths. Only with a new D-entry, one variant, fixed before running
+  concept: measured stat = true style + sampling noise; if between-player variance is small vs noise variance, any partition is unstable (reliability = var_true / var_measured)
+  trap: trying variants until one reaches 0.6 = overfitting the gate
+  eval: boot ARI + silhouette, pre-registered single variant
+  confidence: med (would a 4-dim, reliability-filtered vector show silhouette > 0.25? unknown)
+[4] Method fixes
+  type: ML > unsupervised > ensemble clustering (bagged k-means BagClust1/2, consensus) | soft clustering (GMM)
+  why: bagging stabilises the reported partition (Dudoit & Fridlyand 2003)
+  why_not: violates D-044 "method never switches"; stabilises the label assignment, not the existence of types; GMM already run as comparison
+  approaches: BagClust1 (vote) | BagClust2 (co-association matrix -> hierarchical) | GMM soft memberships
+  pick: no, unless Phase 5 shows hard labels hurt
+  concept: average many bootstrap partitions -> each player's label is the majority over resamples; boundary players stay ambiguous
+  trap: a stable bagged partition reported as "found archetypes"
+  eval: n/a
+  confidence: high
+[5] Reframe: what Phase 5 actually needs
+  type: decision > model choice > quantisation for a pooled lookup table
+  why: the goal is matchup prediction; a matchup table pools players into cells so cells have enough balls. Pooling a continuum into 3-4 bins still reduces variance; it does not need true types
+  why_not: "no archetypes, no table" -> the plan's head-to-head (stats arch vs emb arch vs phase baseline vs cric2vec) is exactly the test of whether these bins help
+  approaches: use the pre-registered stats k=3/4 hard labels (as D-044 chose) | soft membership-weighted table (new D-entry) | continuous model (already = LightGBM+stats from Phase 3)
+  pick: pre-registered hard labels, flagged unstable; Phase 5 val log-loss judges them
+  concept: bias-variance: k bins trade within-bin heterogeneity (bias) against per-cell sample size (variance); stability is a proxy, log-loss is the target
+  trap: naming the clusters as if they were real types in the writeup
+  eval: Phase 5 headline log-loss with bootstrap CIs
+  confidence: med (Phase 5 may show archetype tables ~= phase baseline)
+[6] Embedding arm
+  type: diagnosis > upstream representation failure
+  why: boot ARI ~0.01, cross-rep ARI ~0.01, probe ratio < 0.2: no style signal to cluster
+  why_not: a Phase 4 fix -> the cause is Phase 3 extraction (D-043: I = 0.0046 vs E = 0.0018)
+  approaches: carry it into Phase 5 as reported-unstable (plan fallback) | drop it from Phase 5
+  pick: carry it (plan says the comparison still runs); expected to lose
+  concept: clustering cannot recover structure the vectors do not hold
+  trap: retraining cric2vec now to rescue Phase 4 (val already scored; D-040(1))
+  eval: Phase 5 comparison
+  confidence: high
+
+DEPENDENCIES: 1 -> 2 (optional) -> 5; 3 and 4 only via a new D-entry; 6 independent
+RISKIEST_LEAF: 3 - every knob is free to try and each try looks reasonable alone; together they are p-hacking the gate
+KEY_FORMULAS:
+s_i = (b_i - a_i) / max(a_i, b_i)
+ARI = (RI - E[RI]) / (max RI - E[RI])
+J(C, D) = |C n D| / |C u D|
+reliability = var_true / (var_true + var_noise)
+GLOSSARY: ARI=adjusted Rand index; seed ARI=same data, different k-means start; boot ARI=resampled data; ladder=D-044(7) remedies; step 3=nothing passed, best k reported; BagClust=bagged clustering
+BRAINSTORM_SEEDS:
+- the result itself is a finding: "T20 player style is a continuum at Cricsheet scale; archetypes are bins, not types" is a defensible paper/CV line
+- clusterwise Jaccard may show one real archetype (e.g. death hitters) worth naming even if the partition is not
+- Phase 5 could add a pre-registered continuous matchup arm (batter stats x bowler stats -> outcome) as the upper reference; LightGBM+stats already approximates it

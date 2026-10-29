@@ -1,0 +1,538 @@
+{
+  "stats_batter": {
+    "random": {
+      "3": {
+        "inertia_mean": 9496.274221266594,
+        "inertia_std": 19.51994979522923,
+        "inertia_min": 9477.03962302602,
+        "inertia_max": 9518.536312694836,
+        "n_iter_mean": 19.76,
+        "n_iter_max": 45
+      },
+      "4": {
+        "inertia_mean": 8736.12682136872,
+        "inertia_std": 26.260162809940816,
+        "inertia_min": 8700.72059462205,
+        "inertia_max": 8773.235386585571,
+        "n_iter_mean": 19.24,
+        "n_iter_max": 38
+      },
+      "5": {
+        "inertia_mean": 8157.42653411481,
+        "inertia_std": 72.59943075647361,
+        "inertia_min": 8123.064524757087,
+        "inertia_max": 8400.98739258103,
+        "n_iter_mean": 27.22,
+        "n_iter_max": 50
+      },
+      "6": {
+        "inertia_mean": 7784.713256617647,
+        "inertia_std": 65.1967738887627,
+        "inertia_min": 7725.437179639857,
+        "inertia_max": 8041.563395976646,
+        "n_iter_mean": 31.36,
+        "n_iter_max": 58
+      },
+      "7": {
+        "inertia_mean": 7487.598638635207,
+        "inertia_std": 31.102784335129176,
+        "inertia_min": 7439.571947946919,
+        "inertia_max": 7570.140153411778,
+        "n_iter_mean": 29.46,
+        "n_iter_max": 80
+      },
+      "8": {
+        "inertia_mean": 7235.191491059065,
+        "inertia_std": 34.93368874963757,
+        "inertia_min": 7183.4675267842795,
+        "inertia_max": 7327.163532442297,
+        "n_iter_mean": 28.42,
+        "n_iter_max": 50
+      },
+      "9": {
+        "inertia_mean": 7025.44862151977,
+        "inertia_std": 39.219060619729746,
+        "inertia_min": 6956.760986802537,
+        "inertia_max": 7167.326956118393,
+        "n_iter_mean": 29.34,
+        "n_iter_max": 58
+      },
+      "10": {
+        "inertia_mean": 6817.150653745747,
+        "inertia_std": 37.61436283329028,
+        "inertia_min": 6748.838577078959,
+        "inertia_max": 6890.720224779563,
+        "n_iter_mean": 27.22,
+        "n_iter_max": 49
+      }
+    },
+    "k-means++": {
+      "3": {
+        "inertia_mean": 9490.997455293378,
+        "inertia_std": 17.86821219165763,
+        "inertia_min": 9477.03962302602,
+        "inertia_max": 9518.414568855856,
+        "n_iter_mean": 20.94,
+        "n_iter_max": 50
+      },
+      "4": {
+        "inertia_mean": 8730.50249927057,
+        "inertia_std": 29.92971321270978,
+        "inertia_min": 8700.696691551155,
+        "inertia_max": 8824.877010897268,
+        "n_iter_mean": 18.96,
+        "n_iter_max": 37
+      },
+      "5": {
+        "inertia_mean": 8157.384932088396,
+        "inertia_std": 61.19767459800751,
+        "inertia_min": 8123.0914645219555,
+        "inertia_max": 8377.533958760716,
+        "n_iter_mean": 24.12,
+        "n_iter_max": 55
+      },
+      "6": {
+        "inertia_mean": 7770.669721148361,
+        "inertia_std": 55.85808333873097,
+        "inertia_min": 7725.697089994503,
+        "inertia_max": 7961.878257099088,
+        "n_iter_mean": 30.86,
+        "n_iter_max": 60
+      },
+      "7": {
+        "inertia_mean": 7485.802283189796,
+        "inertia_std": 28.303992715238884,
+        "inertia_min": 7440.132846944628,
+        "inertia_max": 7543.987830388547,
+        "n_iter_mean": 26.94,
+        "n_iter_max": 67
+      },
+      "8": {
+        "inertia_mean": 7230.848811768006,
+        "inertia_std": 33.26622494819435,
+        "inertia_min": 7181.511040023767,
+        "inertia_max": 7317.384663453013,
+        "n_iter_mean": 28.86,
+        "n_iter_max": 52
+      },
+      "9": {
+        "inertia_mean": 7016.120982800634,
+        "inertia_std": 39.72010972382686,
+        "inertia_min": 6948.518198403508,
+        "inertia_max": 7114.544315332606,
+        "n_iter_mean": 26.94,
+        "n_iter_max": 58
+      },
+      "10": {
+        "inertia_mean": 6814.869769117944,
+        "inertia_std": 37.35085106049706,
+        "inertia_min": 6736.2367138403715,
+        "inertia_max": 6912.396542597824,
+        "n_iter_mean": 28.06,
+        "n_iter_max": 55
+      }
+    }
+  },
+  "stats_bowler": {
+    "random": {
+      "3": {
+        "inertia_mean": 10110.431635292345,
+        "inertia_std": 79.86326022408012,
+        "inertia_min": 10062.372724788667,
+        "inertia_max": 10266.177211874903,
+        "n_iter_mean": 18.28,
+        "n_iter_max": 38
+      },
+      "4": {
+        "inertia_mean": 9364.80308392482,
+        "inertia_std": 63.89940664449978,
+        "inertia_min": 9339.142016384241,
+        "inertia_max": 9737.415659081846,
+        "n_iter_mean": 26.76,
+        "n_iter_max": 53
+      },
+      "5": {
+        "inertia_mean": 8931.9193480585,
+        "inertia_std": 36.83147780957302,
+        "inertia_min": 8887.356552998799,
+        "inertia_max": 8992.191356618896,
+        "n_iter_mean": 24.5,
+        "n_iter_max": 49
+      },
+      "6": {
+        "inertia_mean": 8564.6166137175,
+        "inertia_std": 43.8948384143172,
+        "inertia_min": 8516.718520811979,
+        "inertia_max": 8695.610931437488,
+        "n_iter_mean": 31.08,
+        "n_iter_max": 68
+      },
+      "7": {
+        "inertia_mean": 8269.495558444538,
+        "inertia_std": 41.9685735729864,
+        "inertia_min": 8198.60917029903,
+        "inertia_max": 8365.028503569127,
+        "n_iter_mean": 31.38,
+        "n_iter_max": 87
+      },
+      "8": {
+        "inertia_mean": 8012.369854850532,
+        "inertia_std": 44.09441821495822,
+        "inertia_min": 7941.877078868833,
+        "inertia_max": 8153.521498426973,
+        "n_iter_mean": 29.5,
+        "n_iter_max": 56
+      },
+      "9": {
+        "inertia_mean": 7781.723649313141,
+        "inertia_std": 46.60047378365582,
+        "inertia_min": 7709.61280064735,
+        "inertia_max": 7895.836879274676,
+        "n_iter_mean": 33.26,
+        "n_iter_max": 73
+      },
+      "10": {
+        "inertia_mean": 7579.793968409939,
+        "inertia_std": 44.564730574165935,
+        "inertia_min": 7499.569537707461,
+        "inertia_max": 7663.690910256129,
+        "n_iter_mean": 32.06,
+        "n_iter_max": 55
+      }
+    },
+    "k-means++": {
+      "3": {
+        "inertia_mean": 10092.640540970031,
+        "inertia_std": 67.87965137529669,
+        "inertia_min": 10062.220789121064,
+        "inertia_max": 10266.589992890971,
+        "n_iter_mean": 18.42,
+        "n_iter_max": 31
+      },
+      "4": {
+        "inertia_mean": 9356.647887853193,
+        "inertia_std": 46.60780500848167,
+        "inertia_min": 9339.153455435435,
+        "inertia_max": 9633.854598371949,
+        "n_iter_mean": 27.1,
+        "n_iter_max": 59
+      },
+      "5": {
+        "inertia_mean": 8931.093653588621,
+        "inertia_std": 32.89084284096484,
+        "inertia_min": 8887.202437377538,
+        "inertia_max": 8992.140400720144,
+        "n_iter_mean": 25.4,
+        "n_iter_max": 57
+      },
+      "6": {
+        "inertia_mean": 8559.023450140056,
+        "inertia_std": 43.06678981512051,
+        "inertia_min": 8518.058673660424,
+        "inertia_max": 8681.149724867668,
+        "n_iter_mean": 29.26,
+        "n_iter_max": 66
+      },
+      "7": {
+        "inertia_mean": 8265.518288730562,
+        "inertia_std": 31.446121585774772,
+        "inertia_min": 8201.77059107745,
+        "inertia_max": 8332.70792987991,
+        "n_iter_mean": 29.34,
+        "n_iter_max": 75
+      },
+      "8": {
+        "inertia_mean": 8013.50471411338,
+        "inertia_std": 40.307704980476394,
+        "inertia_min": 7952.155428240102,
+        "inertia_max": 8130.249704551445,
+        "n_iter_mean": 29.6,
+        "n_iter_max": 58
+      },
+      "9": {
+        "inertia_mean": 7783.7414753568755,
+        "inertia_std": 45.52497712116003,
+        "inertia_min": 7719.759910621126,
+        "inertia_max": 7896.186819274031,
+        "n_iter_mean": 29.94,
+        "n_iter_max": 79
+      },
+      "10": {
+        "inertia_mean": 7567.539918187441,
+        "inertia_std": 41.35044861615358,
+        "inertia_min": 7498.157398476209,
+        "inertia_max": 7657.150129110269,
+        "n_iter_mean": 29.8,
+        "n_iter_max": 59
+      }
+    }
+  },
+  "emb_batter": {
+    "random": {
+      "3": {
+        "inertia_mean": 7724.046591796875,
+        "inertia_std": 16.230385567782506,
+        "inertia_min": 7694.10693359375,
+        "inertia_max": 7777.8486328125,
+        "n_iter_mean": 30.34,
+        "n_iter_max": 62
+      },
+      "4": {
+        "inertia_mean": 7292.723720703125,
+        "inertia_std": 25.10952879002303,
+        "inertia_min": 7243.20751953125,
+        "inertia_max": 7362.81982421875,
+        "n_iter_mean": 34.04,
+        "n_iter_max": 74
+      },
+      "5": {
+        "inertia_mean": 6947.978125,
+        "inertia_std": 27.646156814645128,
+        "inertia_min": 6897.41845703125,
+        "inertia_max": 7010.29541015625,
+        "n_iter_mean": 34.92,
+        "n_iter_max": 65
+      },
+      "6": {
+        "inertia_mean": 6659.62953125,
+        "inertia_std": 32.49999096225319,
+        "inertia_min": 6614.93310546875,
+        "inertia_max": 6762.2685546875,
+        "n_iter_mean": 34.5,
+        "n_iter_max": 71
+      },
+      "7": {
+        "inertia_mean": 6410.56513671875,
+        "inertia_std": 27.24371341021138,
+        "inertia_min": 6360.4794921875,
+        "inertia_max": 6468.65625,
+        "n_iter_mean": 32.48,
+        "n_iter_max": 48
+      },
+      "8": {
+        "inertia_mean": 6183.79751953125,
+        "inertia_std": 32.834053942360995,
+        "inertia_min": 6123.4248046875,
+        "inertia_max": 6263.32373046875,
+        "n_iter_mean": 35.58,
+        "n_iter_max": 73
+      },
+      "9": {
+        "inertia_mean": 6001.4743359375,
+        "inertia_std": 32.4329035893603,
+        "inertia_min": 5942.578125,
+        "inertia_max": 6073.1669921875,
+        "n_iter_mean": 32.46,
+        "n_iter_max": 66
+      },
+      "10": {
+        "inertia_mean": 5837.25806640625,
+        "inertia_std": 33.38567247523307,
+        "inertia_min": 5772.615234375,
+        "inertia_max": 5903.9228515625,
+        "n_iter_mean": 34.2,
+        "n_iter_max": 70
+      }
+    },
+    "k-means++": {
+      "3": {
+        "inertia_mean": 7723.1648046875,
+        "inertia_std": 17.25285593557574,
+        "inertia_min": 7696.4384765625,
+        "inertia_max": 7767.77685546875,
+        "n_iter_mean": 29.9,
+        "n_iter_max": 84
+      },
+      "4": {
+        "inertia_mean": 7295.51673828125,
+        "inertia_std": 29.87686540231175,
+        "inertia_min": 7240.69921875,
+        "inertia_max": 7383.41943359375,
+        "n_iter_mean": 30.12,
+        "n_iter_max": 47
+      },
+      "5": {
+        "inertia_mean": 6950.694912109375,
+        "inertia_std": 27.841867497349995,
+        "inertia_min": 6894.50048828125,
+        "inertia_max": 7019.2958984375,
+        "n_iter_mean": 31.92,
+        "n_iter_max": 82
+      },
+      "6": {
+        "inertia_mean": 6654.670869140625,
+        "inertia_std": 24.485923002327237,
+        "inertia_min": 6615.33984375,
+        "inertia_max": 6719.43310546875,
+        "n_iter_mean": 33.34,
+        "n_iter_max": 58
+      },
+      "7": {
+        "inertia_mean": 6403.165546875,
+        "inertia_std": 25.760982452621754,
+        "inertia_min": 6350.1298828125,
+        "inertia_max": 6453.77734375,
+        "n_iter_mean": 35.94,
+        "n_iter_max": 63
+      },
+      "8": {
+        "inertia_mean": 6187.968330078125,
+        "inertia_std": 23.938368696383275,
+        "inertia_min": 6146.521484375,
+        "inertia_max": 6240.23486328125,
+        "n_iter_mean": 33.48,
+        "n_iter_max": 65
+      },
+      "9": {
+        "inertia_mean": 5994.12875,
+        "inertia_std": 31.249385422948418,
+        "inertia_min": 5934.9873046875,
+        "inertia_max": 6059.68359375,
+        "n_iter_mean": 35.0,
+        "n_iter_max": 86
+      },
+      "10": {
+        "inertia_mean": 5838.359541015625,
+        "inertia_std": 40.46770842078383,
+        "inertia_min": 5765.318359375,
+        "inertia_max": 5947.361328125,
+        "n_iter_mean": 31.74,
+        "n_iter_max": 49
+      }
+    }
+  },
+  "emb_bowler": {
+    "random": {
+      "3": {
+        "inertia_mean": 8300.79197265625,
+        "inertia_std": 17.889159787599453,
+        "inertia_min": 8257.33203125,
+        "inertia_max": 8343.068359375,
+        "n_iter_mean": 31.26,
+        "n_iter_max": 64
+      },
+      "4": {
+        "inertia_mean": 7837.1665234375,
+        "inertia_std": 26.713713137928895,
+        "inertia_min": 7784.23974609375,
+        "inertia_max": 7906.09033203125,
+        "n_iter_mean": 33.8,
+        "n_iter_max": 62
+      },
+      "5": {
+        "inertia_mean": 7450.792880859375,
+        "inertia_std": 24.665577793922427,
+        "inertia_min": 7394.66796875,
+        "inertia_max": 7527.1220703125,
+        "n_iter_mean": 36.42,
+        "n_iter_max": 76
+      },
+      "6": {
+        "inertia_mean": 7131.59724609375,
+        "inertia_std": 32.075691689529556,
+        "inertia_min": 7078.55322265625,
+        "inertia_max": 7245.947265625,
+        "n_iter_mean": 36.68,
+        "n_iter_max": 71
+      },
+      "7": {
+        "inertia_mean": 6862.75296875,
+        "inertia_std": 37.34046869916014,
+        "inertia_min": 6805.37353515625,
+        "inertia_max": 6986.9287109375,
+        "n_iter_mean": 40.06,
+        "n_iter_max": 84
+      },
+      "8": {
+        "inertia_mean": 6631.51451171875,
+        "inertia_std": 30.170234366117654,
+        "inertia_min": 6577.9599609375,
+        "inertia_max": 6702.3994140625,
+        "n_iter_mean": 37.14,
+        "n_iter_max": 69
+      },
+      "9": {
+        "inertia_mean": 6435.6969140625,
+        "inertia_std": 37.913434104472486,
+        "inertia_min": 6368.9912109375,
+        "inertia_max": 6540.9462890625,
+        "n_iter_mean": 33.08,
+        "n_iter_max": 65
+      },
+      "10": {
+        "inertia_mean": 6265.211787109375,
+        "inertia_std": 35.10422415146299,
+        "inertia_min": 6195.818359375,
+        "inertia_max": 6351.1669921875,
+        "n_iter_mean": 34.08,
+        "n_iter_max": 84
+      }
+    },
+    "k-means++": {
+      "3": {
+        "inertia_mean": 8296.4627734375,
+        "inertia_std": 18.93079552709382,
+        "inertia_min": 8256.24609375,
+        "inertia_max": 8337.26953125,
+        "n_iter_mean": 29.1,
+        "n_iter_max": 72
+      },
+      "4": {
+        "inertia_mean": 7831.482900390625,
+        "inertia_std": 22.680463826040636,
+        "inertia_min": 7784.37939453125,
+        "inertia_max": 7884.2470703125,
+        "n_iter_mean": 33.18,
+        "n_iter_max": 64
+      },
+      "5": {
+        "inertia_mean": 7451.58201171875,
+        "inertia_std": 31.969784442197582,
+        "inertia_min": 7396.65625,
+        "inertia_max": 7519.08154296875,
+        "n_iter_mean": 33.52,
+        "n_iter_max": 72
+      },
+      "6": {
+        "inertia_mean": 7138.456953125,
+        "inertia_std": 29.267019490459994,
+        "inertia_min": 7080.892578125,
+        "inertia_max": 7211.82421875,
+        "n_iter_mean": 35.26,
+        "n_iter_max": 66
+      },
+      "7": {
+        "inertia_mean": 6859.722490234375,
+        "inertia_std": 25.90759789923127,
+        "inertia_min": 6805.07275390625,
+        "inertia_max": 6942.3173828125,
+        "n_iter_mean": 38.12,
+        "n_iter_max": 75
+      },
+      "8": {
+        "inertia_mean": 6629.0137890625,
+        "inertia_std": 32.8099031667725,
+        "inertia_min": 6568.310546875,
+        "inertia_max": 6731.58984375,
+        "n_iter_mean": 35.3,
+        "n_iter_max": 80
+      },
+      "9": {
+        "inertia_mean": 6427.0315234375,
+        "inertia_std": 41.28562771315707,
+        "inertia_min": 6353.8583984375,
+        "inertia_max": 6572.5380859375,
+        "n_iter_mean": 33.5,
+        "n_iter_max": 70
+      },
+      "10": {
+        "inertia_mean": 6258.52748046875,
+        "inertia_std": 33.77684999082897,
+        "inertia_min": 6195.95654296875,
+        "inertia_max": 6333.85693359375,
+        "n_iter_mean": 34.02,
+        "n_iter_max": 71
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "holdout_year": 2023,
+  "seed": 42,
+  "chosen_dim": 8,
+  "chosen_dim_holdout_log_loss": 1.437133310574569,
+  "small_dims": {
+    "2": {
+      "holdout_log_loss": 1.4379725360057818,
+      "epochs": 14
+    },
+    "4": {
+      "holdout_log_loss": 1.4375169704258828,
+      "epochs": 13
+    }
+  },
+  "decision": {
+    "best_small_dim": 4,
+    "gain_vs_chosen": -0.0003836598513138334,
+    "min_gain": 0.002,
+    "smaller_dim_helps": false
+  }
+}
