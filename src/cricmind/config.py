@@ -42,6 +42,8 @@ TEST_END_YEAR = 2026
 
 # D-008: players with fewer train balls share the UNK embedding.
 MIN_TRAIN_BALLS_EMBEDDING = 50
+# D-038: venues with fewer train balls share a venue UNK (a guess, like the competition floor).
+MIN_TRAIN_BALLS_VENUE = 1_000
 # D-009: archetype eligibility, legal train balls (batters and bowlers separately).
 MIN_TRAIN_BALLS_ARCHETYPE = 300
 

@@ -25,6 +25,14 @@ NUMERIC = [
 CATEGORICAL = ["phase", "competition"]
 FEATURES = NUMERIC + CATEGORICAL  # `is_reduced` is deliberately absent: it is only known after the match
 BOOKKEEPING = ["match_id", "ball_seq", "match_date", "year", "split", "is_reduced", "y"]
+# D-038: identities travel with the frame for the embedding and target-encoding models; the Phase 2
+# baselines select FEATURES, so they never see these.
+IDS = ["batter_id", "bowler_id", "venue_key"]
+# D-016 / D-038(8): the previous 12 legal balls of the innings, current ball excluded. Only built on request,
+# so the Phase 2 floor and the base cric2vec arm do not contain them.
+SEQUENCE = ["runs_last12", "wkts_last12", "last_outcome"]
+SEQ_WINDOW = 12
+NO_LAST_OUTCOME = len(config.OUTCOME_CLASSES)  # `last_outcome` code for the first ball of an innings
 REQ_RATE_CLIP = 36.0  # runs per over; above this the chase is lost anyway
 
 
@@ -44,8 +52,19 @@ def _before(df: pd.DataFrame, values: pd.Series, keys: list[str]) -> pd.Series:
     return v.groupby([df[k] for k in keys]).cumsum() - v
 
 
-def build_context(deliveries: pd.DataFrame, competitions: list[str]) -> pd.DataFrame:
-    """One row per modelled ball (legal, not a super over): FEATURES + BOOKKEEPING.
+def _add_sequence(d: pd.DataFrame, inn: list[str]) -> None:
+    """In place, on modelled (legal) rows in ball order. Sums over the previous SEQ_WINDOW legal balls of
+    the innings: exclusive cumsum minus the exclusive cumsum SEQ_WINDOW rows back (0 before the start)."""
+    wicket = (d["y"] == config.OUTCOME_CLASSES.index("W")).astype("int64")
+    for col, values in (("runs_last12", d["runs_batter"]), ("wkts_last12", wicket)):
+        before = _before(d, values, inn)
+        d[col] = before - before.groupby([d[k] for k in inn]).shift(SEQ_WINDOW).fillna(0).astype("int64")
+    prev = d["y"].astype("int64").groupby([d[k] for k in inn]).shift(1)
+    d["last_outcome"] = prev.fillna(NO_LAST_OUTCOME).astype("int64")
+
+
+def build_context(deliveries: pd.DataFrame, competitions: list[str], sequence: bool = False) -> pd.DataFrame:
+    """One row per modelled ball (legal, not a super over): BOOKKEEPING + FEATURES + IDS (+ SEQUENCE).
 
     `deliveries` must hold every delivery of its matches, wides and no-balls included: the batter's balls
     faced and the innings' balls bowled are counted over all of them (D-031).
@@ -81,6 +100,8 @@ def build_context(deliveries: pd.DataFrame, competitions: list[str]) -> pd.DataF
         d.loc[reduced, col] = np.nan
 
     d["y"] = d["outcome"].map({c: i for i, c in enumerate(config.OUTCOME_CLASSES)}).astype("int8")
+    if sequence:
+        _add_sequence(d, inn)  # rows are still in (match, innings, ball_seq) order here
     d["split"] = assign_split(d["match_date"])
     d["year"] = pd.to_datetime(d["match_date"]).dt.year
-    return d[BOOKKEEPING + FEATURES]
+    return d[BOOKKEEPING + FEATURES + IDS + (SEQUENCE if sequence else [])]

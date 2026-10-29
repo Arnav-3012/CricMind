@@ -21,7 +21,7 @@ BOUNDS = {
 }
 # Everything the context features need, nothing else (the parquet has 34 columns).
 COLUMNS = [
-    "match_id", "match_date", "competition", "innings", "is_super_over", "over", "ball_seq",
+    "match_id", "match_date", "competition", "venue_key", "innings", "is_super_over", "over", "ball_seq",
     "legal_ball_in_over", "batter_id", "bowler_id", "runs_batter", "wides", "is_legal", "outcome",
     "score_before", "wickets_before", "target", "legal_balls_remaining", "is_reduced",
 ]  # fmt: skip
