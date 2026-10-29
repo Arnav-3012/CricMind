@@ -44,6 +44,10 @@ TEST_END_YEAR = 2026
 MIN_TRAIN_BALLS_EMBEDDING = 50
 # D-038: venues with fewer train balls share a venue UNK (a guess, like the competition floor).
 MIN_TRAIN_BALLS_VENUE = 1_000
+# D-038(3): target-encoded player stats shrink toward the class shares with this many pseudo-balls, and are
+# out-of-fold over this many folds (assigned by match) inside train.
+STATS_SHRINK_M = 100
+STATS_FOLDS = 10  # D-039: train rows see 90% of train; val sees 100%
 # D-009: archetype eligibility, legal train balls (batters and bowlers separately).
 MIN_TRAIN_BALLS_ARCHETYPE = 300
 
