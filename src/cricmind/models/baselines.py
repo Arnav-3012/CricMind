@@ -197,9 +197,12 @@ class Lgbm:
     name = "lightgbm"
     MAX_TREES = 2000
 
-    def __init__(self, n_estimators: int | None = None, features: list[str] | None = None):
+    def __init__(
+        self, n_estimators: int | None = None, features: list[str] | None = None, seed: int = config.SEED
+    ):
         self.n_estimators = n_estimators
         self.features = features or FEATURES  # a shorter list is how the reduced-gap check drops inputs
+        self.seed = seed  # Phase 3 averages three seeds (D-038(6))
 
     def _model(self, n_estimators: int) -> lgb.LGBMClassifier:
         return lgb.LGBMClassifier(
@@ -209,7 +212,7 @@ class Lgbm:
             num_leaves=31,
             min_child_samples=100,
             colsample_bytree=0.8,
-            random_state=config.SEED,
+            random_state=self.seed,
             deterministic=True,
             force_row_wise=True,
             verbose=-1,
@@ -234,7 +237,8 @@ class Lgbm:
             callbacks=[lgb.early_stopping(50, verbose=False)],
         )
         self.n_estimators = int(model.best_iteration_ or self.MAX_TREES)
-        return {"best_iteration": self.n_estimators}
+        best = next(iter(model.best_score_.values()))["multi_logloss"]  # Phase 3 compares arms on this
+        return {"best_iteration": self.n_estimators, "holdout_log_loss": float(best)}
 
     def fit(self, train: pd.DataFrame) -> "Lgbm":
         if self.n_estimators is None:
