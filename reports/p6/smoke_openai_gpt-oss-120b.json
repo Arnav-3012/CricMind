@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-120b",
+  "forced_call": true,
+  "auto_call": true,
+  "round_trip": true,
+  "error": null,
+  "ratelimit_headers": {},
+  "final_answer": "Virat\u202fKohli has scored a total of **13,250 runs**."
+}

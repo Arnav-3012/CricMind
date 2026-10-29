@@ -8,6 +8,7 @@ dependencies = [
     "duckdb",
     "lightgbm>=4.7.0",
     "numpy>=2.5.4",
+    "openai>=3.41.0",
     "pandas",
     "pyarrow",
     "scikit-learn>=1.9.1",

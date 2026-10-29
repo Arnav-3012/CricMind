@@ -1,0 +1,7 @@
+{
+  "model": "google/gemma-4-31b-it:free",
+  "forced_call": false,
+  "auto_call": false,
+  "round_trip": false,
+  "error": "RateLimitError: Error code: 429 - Provider returned error"
+}

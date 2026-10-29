@@ -66,8 +66,15 @@ def pair_pool(con) -> pd.DataFrame:
 
 def rec(cat, question, truth, tol, source, tools, ids, sql=None, refuse=False) -> dict:
     return {
-        "category": cat, "question": question, "truth": truth, "tolerance": tol, "truth_source": source,
-        "acceptable_first_tools": tools, "player_ids": ids, "sql": sql, "refuse": refuse,
+        "category": cat,
+        "question": question,
+        "truth": truth,
+        "tolerance": tol,
+        "truth_source": source,
+        "acceptable_first_tools": tools,
+        "player_ids": ids,
+        "sql": sql,
+        "refuse": refuse,
     }
 
 
@@ -79,40 +86,110 @@ def lookups(con, bats: pd.DataFrame, bowls: pd.DataFrame) -> list[dict]:
     out = []
     for _, b in bats.iloc[[0, 3]].iterrows():
         sql = "select sum(runs_batter) from legal_deliveries where batter_id = ?"
-        out.append(rec("lookup", f"How many runs has {b['name']} scored off legal deliveries in the dataset?",
-                       int(one(con, sql, b["id"])[0]), 0, "sql", ["player_profile", "sql"], [b["id"]], sql))
+        out.append(
+            rec(
+                "lookup",
+                f"How many runs has {b['name']} scored off legal deliveries in the dataset?",
+                int(one(con, sql, b["id"])[0]),
+                0,
+                "sql",
+                ["player_profile", "sql"],
+                [b["id"]],
+                sql,
+            )
+        )
     for _, w in bowls.iloc[[1, 4]].iterrows():
         sql = "select count(*) from legal_deliveries where bowler_id = ? and outcome = 'W'"
-        out.append(rec("lookup", f"How many batter dismissals (excluding run outs) has {w['name']} taken?",
-                       int(one(con, sql, w["id"])[0]), 0, "sql", ["player_profile", "sql"], [w["id"]], sql))
+        out.append(
+            rec(
+                "lookup",
+                f"How many batter dismissals (excluding run outs) has {w['name']} taken?",
+                int(one(con, sql, w["id"])[0]),
+                0,
+                "sql",
+                ["player_profile", "sql"],
+                [w["id"]],
+                sql,
+            )
+        )
     b = bats.iloc[5]
     sql = "select 100.0 * sum(runs_batter) / count(*) from legal_deliveries where batter_id = ?"
-    out.append(rec("lookup", f"What is {b['name']}'s strike rate off legal deliveries?",
-                   round(one(con, sql, b["id"])[0], 2), 0.1, "sql", PROFILE, [b["id"]], sql))
+    out.append(
+        rec(
+            "lookup",
+            f"What is {b['name']}'s strike rate off legal deliveries?",
+            round(one(con, sql, b["id"])[0], 2),
+            0.1,
+            "sql",
+            PROFILE,
+            [b["id"]],
+            sql,
+        )
+    )
     b = bats.iloc[8]
     sql = "select 100.0 * avg((outcome in ('4', '6'))::int) from legal_deliveries where batter_id = ?"
-    out.append(rec("lookup", f"What percentage of the legal balls {b['name']} faces go for four or six?",
-                   round(one(con, sql, b["id"])[0], 2), 0.1, "sql", PROFILE, [b["id"]], sql))
+    out.append(
+        rec(
+            "lookup",
+            f"What percentage of the legal balls {b['name']} faces go for four or six?",
+            round(one(con, sql, b["id"])[0], 2),
+            0.1,
+            "sql",
+            PROFILE,
+            [b["id"]],
+            sql,
+        )
+    )
     w = bowls.iloc[7]
     sql = "select 100.0 * avg((outcome = 'dot')::int) from legal_deliveries where bowler_id = ?"
-    out.append(rec("lookup", f"What percentage of {w['name']}'s legal balls are dot balls?",
-                   round(one(con, sql, w["id"])[0], 2), 0.1, "sql", PROFILE, [w["id"]], sql))
+    out.append(
+        rec(
+            "lookup",
+            f"What percentage of {w['name']}'s legal balls are dot balls?",
+            round(one(con, sql, w["id"])[0], 2),
+            0.1,
+            "sql",
+            PROFILE,
+            [w["id"]],
+            sql,
+        )
+    )
     sql = (
         "select d.bowler_id, p.name, count(*) as w from legal_deliveries d "
         "join matches m using (match_id) join players p on p.player_id = d.bowler_id "
         "where d.outcome = 'W' and m.season_year = 2024 group by all order by w desc limit 1"
     )
     top = con.execute(sql).fetchone()
-    out.append(rec("lookup", "Which bowler took the most batter dismissals (excluding run outs) in 2024?",
-                   top[1], 0, "sql", ["top_players", "sql"], [top[0]], sql))
+    out.append(
+        rec(
+            "lookup",
+            "Which bowler took the most batter dismissals (excluding run outs) in 2024?",
+            top[1],
+            0,
+            "sql",
+            ["top_players", "sql"],
+            [top[0]],
+            sql,
+        )
+    )
     sql = (
         "select d.batter_id, p.name, sum(d.runs_batter) as r from legal_deliveries d "
         "join matches m using (match_id) join players p on p.player_id = d.batter_id "
         "where m.season_year = 2024 group by all order by r desc limit 1"
     )
     top = con.execute(sql).fetchone()
-    out.append(rec("lookup", "Which batter scored the most runs off legal balls in 2024?",
-                   top[1], 0, "sql", ["top_players", "sql"], [top[0]], sql))
+    out.append(
+        rec(
+            "lookup",
+            "Which batter scored the most runs off legal balls in 2024?",
+            top[1],
+            0,
+            "sql",
+            ["top_players", "sql"],
+            [top[0]],
+            sql,
+        )
+    )
     return out
 
 
@@ -127,12 +204,17 @@ def matchup_obs(pairs: pd.DataFrame) -> tuple[list[dict], pd.DataFrame]:
         q, truth, tol = {
             "balls": (f"How many legal balls has {who} faced?", int(row["balls"]), 0),
             "runs": (f"How many runs has {who} scored off legal balls?", int(row["runs"]), 0),
-            "dismissals": (f"How many times has {row['bat']} been dismissed by {row['bowl']} "
-                           f"(excluding run outs)?", int(row["dismissals"]), 0),
+            "dismissals": (
+                f"How many times has {row['bat']} been dismissed by {row['bowl']} (excluding run outs)?",
+                int(row["dismissals"]),
+                0,
+            ),
             "sr": (f"What is the strike rate of {who}?", round(100 * row["runs"] / row["balls"], 2), 0.1),
         }[slot]
-        sql = ("select count(*), sum(runs_batter), sum((outcome = 'W')::int) from legal_deliveries "
-               "where batter_id = ? and bowler_id = ?")
+        sql = (
+            "select count(*), sum(runs_batter), sum((outcome = 'W')::int) from legal_deliveries "
+            "where batter_id = ? and bowler_id = ?"
+        )
         out.append(rec("matchup", q, truth, tol, "sql", ["matchup", "sql"], ids, sql))
     return out, left
 
@@ -142,10 +224,21 @@ def whatif(left: pd.DataFrame) -> list[dict]:
     for i, (phase, cls) in enumerate(WHATIF):
         row = left.sample(1, random_state=config.SEED + 100 + i).iloc[0]
         left = left.drop(row.name)
-        q = (f"What is the model's probability that {row['bat']} is {CLASS_WORDS[cls]} on a given ball "
-             f"against {row['bowl']} in the {phase} overs? Give it as a fraction.")
-        out.append(rec("what-if", q, None, 0.01, f"tool:matchup:{phase}:{cls}", ["matchup"],
-                       [row["batter_id"], row["bowler_id"]]))
+        q = (
+            f"What is the model's probability that {row['bat']} is {CLASS_WORDS[cls]} on a given ball "
+            f"against {row['bowl']} in the {phase} overs? Give it as a fraction."
+        )
+        out.append(
+            rec(
+                "what-if",
+                q,
+                None,
+                0.01,
+                f"tool:matchup:{phase}:{cls}",
+                ["matchup"],
+                [row["batter_id"], row["bowler_id"]],
+            )
+        )
     return out
 
 
