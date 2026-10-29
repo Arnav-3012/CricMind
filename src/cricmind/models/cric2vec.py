@@ -24,23 +24,38 @@ DROPOUT = 0.1
 # come back through the phase label (D-036/D-037).
 NUMERIC_INPUTS = NUMERIC
 SEQUENCE_NUMERIC = [c for c in SEQUENCE if c != "last_outcome"]
+# D-041(1): situation only, so the embedding must carry the player's outcome distribution. None of these is
+# masked on reduced matches (D-030).
+LITE_NUMERIC = ("over", "innings", "wickets_before")
 
 
 class Encoder:
-    """Fit on one frame (train, or train before the holdout year), then encode any frame the same way."""
+    """Fit on one frame (train, or train before the holdout year), then encode any frame the same way.
 
-    def __init__(self, sequence: bool = False):
+    `numeric` replaces the default dense inputs (the D-041 lite set); `competition=False` drops the
+    competition one-hot, which the lite set also omits."""
+
+    def __init__(
+        self,
+        sequence: bool = False,
+        extra: tuple[str, ...] = (),
+        numeric: tuple[str, ...] | None = None,
+        competition: bool = True,
+    ):
         self.sequence = sequence
+        self.extra = list(extra)  # more dense columns, e.g. the player-at-venue rates ablation (D-038(4))
+        self.base = list(NUMERIC_INPUTS if numeric is None else numeric)
+        self.competition = competition
 
     @property
     def numeric(self) -> list[str]:
-        return NUMERIC_INPUTS + (SEQUENCE_NUMERIC if self.sequence else [])
+        return self.base + (SEQUENCE_NUMERIC if self.sequence else []) + self.extra
 
     def fit(self, frame: pd.DataFrame, competitions: list[str]) -> "Encoder":
         self.bat_vocab = build_vocab(frame, "batter_id", config.MIN_TRAIN_BALLS_EMBEDDING)
         self.bowl_vocab = build_vocab(frame, "bowler_id", config.MIN_TRAIN_BALLS_EMBEDDING)
         self.venue_vocab = build_vocab(frame, "venue_key", config.MIN_TRAIN_BALLS_VENUE)
-        self.competitions = sorted({*competitions, "__other__"})
+        self.competitions = sorted({*competitions, "__other__"}) if self.competition else []
         values = frame[self.numeric].astype("float64")
         self.mean = values.mean().to_numpy()  # NaN (masked, ball 0) skipped, so the fill is the train mean
         self.std = values.std(ddof=0).replace(0.0, 1.0).to_numpy()
@@ -54,8 +69,9 @@ class Encoder:
     def transform(self, frame: pd.DataFrame) -> dict[str, np.ndarray]:
         z = (frame[self.numeric].to_numpy(dtype="float64") - self.mean) / self.std
         parts = [np.nan_to_num(z, nan=0.0)]  # standardised NaN -> 0 is the train mean (D-038(1)), no flag
-        comp = pd.Categorical(frame["competition"], categories=self.competitions)
-        parts.append(np.eye(len(self.competitions))[comp.codes])  # rare ones are __other__ already
+        if self.competitions:
+            comp = pd.Categorical(frame["competition"], categories=self.competitions)
+            parts.append(np.eye(len(self.competitions))[comp.codes])  # rare ones are __other__ already
         if self.sequence:
             parts.append(np.eye(NO_LAST_OUTCOME + 1)[frame["last_outcome"].to_numpy(dtype="int64")])
         return {

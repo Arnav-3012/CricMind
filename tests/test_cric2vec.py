@@ -6,7 +6,7 @@ from torch.nn import functional as F
 
 from cricmind import config
 from cricmind.features.context import FEATURES, SEQUENCE
-from cricmind.models.cric2vec import Cric2Vec, Encoder
+from cricmind.models.cric2vec import LITE_NUMERIC, Cric2Vec, Encoder
 
 
 def _frame(n=64, year=2022, seed=0):
@@ -101,3 +101,12 @@ def test_embeddings_have_an_unk_row_per_vocab():
     assert emb["batter"].shape == (len(enc.bat_vocab) + 1, 4)
     assert emb["bowler"].shape == (len(enc.bowl_vocab) + 1, 4)
 
+
+def test_lite_encoder_uses_only_the_situation_inputs_and_no_competition_one_hot():
+    f = _frame()
+    enc = Encoder(numeric=LITE_NUMERIC, competition=False).fit(f, ["IPL"])
+    assert enc.numeric == list(LITE_NUMERIC) and enc.width == len(LITE_NUMERIC)
+    # the dropped columns (and the competition) are not read at all
+    lite_only = f.drop(columns=[c for c in f if c in FEATURES and c not in LITE_NUMERIC])
+    x = enc.transform(lite_only)["x"]
+    assert x.shape == (len(f), 3) and abs(x.mean(axis=0)).max() < 1e-5
