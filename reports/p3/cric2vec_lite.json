@@ -1,0 +1,33 @@
+{
+  "seed": 42,
+  "device": "mps",
+  "inputs": [
+    "over",
+    "innings",
+    "wickets_before"
+  ],
+  "val_key": 4359684292168833326,
+  "tuning": {
+    "holdout_year": 2023,
+    "fit_rows": 1437141,
+    "holdout_rows": 198703,
+    "holdout_log_loss_by_dim": {
+      "8": 1.4494334529736088,
+      "16": 1.4504705461878984,
+      "32": 1.4524140079510028
+    },
+    "epochs_by_dim": {
+      "8": 18,
+      "16": 13,
+      "32": 10
+    },
+    "dim": 8,
+    "dim_at_grid_edge": false,
+    "epochs": 18
+  },
+  "final": {
+    "dim": 8,
+    "epochs": 18
+  },
+  "val_log_loss": 1.4459091414948506
+}

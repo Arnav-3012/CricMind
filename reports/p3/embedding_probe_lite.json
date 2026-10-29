@@ -1,0 +1,247 @@
+{
+  "dim": 8,
+  "phases": [
+    "powerplay",
+    "middle",
+    "death"
+  ],
+  "min_phase_balls": 50,
+  "min_train_balls": 300,
+  "cut_offs": {
+    "strong": 0.5,
+    "weak": 0.2
+  },
+  "mean_ratio_batter_bowler": 0.12202329199506845,
+  "batter": {
+    "eligible_players": 1139,
+    "mean_r2": 0.10588415662194024,
+    "mean_r2_over_reliability": 0.164756738770978,
+    "verdict": "does_not",
+    "targets": {
+      "strike_rate_death": {
+        "n_players": 541,
+        "r2": 0.10984660157979864,
+        "r2_shuffled": -0.018754081742102136,
+        "reliability": 0.6248989882059034,
+        "r2_over_reliability": 0.1757829723731355,
+        "best_dim": 1,
+        "best_dim_abs_corr": 0.29128596361267245
+      },
+      "strike_rate_middle": {
+        "n_players": 996,
+        "r2": 0.1016895922345854,
+        "r2_shuffled": -0.01566839541578413,
+        "reliability": 0.6824054238299248,
+        "r2_over_reliability": 0.14901638920726018,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.1961198791946178
+      },
+      "strike_rate_powerplay": {
+        "n_players": 717,
+        "r2": 0.1575844281521659,
+        "r2_shuffled": -0.027560273467268193,
+        "reliability": 0.7333736242508444,
+        "r2_over_reliability": 0.2148760508167191,
+        "best_dim": 7,
+        "best_dim_abs_corr": 0.23294815843978867
+      },
+      "dot_pct_death": {
+        "n_players": 541,
+        "r2": 0.08353327563854551,
+        "r2_shuffled": -0.011482723830384067,
+        "reliability": 0.587820842073724,
+        "r2_over_reliability": 0.14210669248108906,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.2769591598100986
+      },
+      "dot_pct_middle": {
+        "n_players": 996,
+        "r2": 0.1039216502506386,
+        "r2_shuffled": -0.01446620919495012,
+        "reliability": 0.7688262543722356,
+        "r2_over_reliability": 0.13516922667461848,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.30342656604003504
+      },
+      "dot_pct_powerplay": {
+        "n_players": 717,
+        "r2": 0.04092039739181563,
+        "r2_shuffled": -0.030871406236015142,
+        "reliability": 0.7099193079562671,
+        "r2_over_reliability": 0.05764091345764107,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.18734936601764915
+      },
+      "boundary_pct_death": {
+        "n_players": 541,
+        "r2": 0.1472651258417852,
+        "r2_shuffled": -0.023389549691364753,
+        "reliability": 0.6249153883343816,
+        "r2_over_reliability": 0.23565610415563348,
+        "best_dim": 1,
+        "best_dim_abs_corr": 0.32174305252636143
+      },
+      "boundary_pct_middle": {
+        "n_players": 996,
+        "r2": 0.19651659959178147,
+        "r2_shuffled": -0.015648136978848592,
+        "reliability": 0.6828515333511935,
+        "r2_over_reliability": 0.28778817941192514,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.23610950284171833
+      },
+      "boundary_pct_powerplay": {
+        "n_players": 717,
+        "r2": 0.21767968435891938,
+        "r2_shuffled": -0.025859235452184492,
+        "reliability": 0.7164520531543922,
+        "r2_over_reliability": 0.3038300796271295,
+        "best_dim": 7,
+        "best_dim_abs_corr": 0.25018047239006036
+      },
+      "wicket_rate_death": {
+        "n_players": 541,
+        "r2": 0.0006123315830545151,
+        "r2_shuffled": -0.03638516448129425,
+        "reliability": 0.378376597109591,
+        "r2_over_reliability": 0.0016183125165036636,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.12010558010990151
+      },
+      "wicket_rate_middle": {
+        "n_players": 996,
+        "r2": 0.045968414613216546,
+        "r2_shuffled": -0.008712664096165668,
+        "reliability": 0.38677243275103756,
+        "r2_over_reliability": 0.11885132114057896,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.1379762529564011
+      },
+      "wicket_rate_powerplay": {
+        "n_players": 717,
+        "r2": 0.0650717782269763,
+        "r2_shuffled": -0.025952382557490328,
+        "reliability": 0.4205107537932783,
+        "r2_over_reliability": 0.15474462338950162,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.2149228151608776
+      }
+    }
+  },
+  "bowler": {
+    "eligible_players": 1220,
+    "mean_r2": 0.0467833476830074,
+    "mean_r2_over_reliability": 0.07928984521915892,
+    "verdict": "does_not",
+    "targets": {
+      "strike_rate_death": {
+        "n_players": 649,
+        "r2": 0.03095566457794352,
+        "r2_shuffled": -0.04277165048756704,
+        "reliability": 0.4900693117343347,
+        "r2_over_reliability": 0.06316589069491563,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.17335247373224055
+      },
+      "strike_rate_middle": {
+        "n_players": 996,
+        "r2": 0.0441978729375474,
+        "r2_shuffled": -0.010548125011639486,
+        "reliability": 0.6183604861010408,
+        "r2_over_reliability": 0.07147590108195467,
+        "best_dim": 1,
+        "best_dim_abs_corr": 0.1709894221628987
+      },
+      "strike_rate_powerplay": {
+        "n_players": 830,
+        "r2": 0.03683141554821945,
+        "r2_shuffled": -0.011983315851235243,
+        "reliability": 0.5685374466213213,
+        "r2_over_reliability": 0.06478274345357464,
+        "best_dim": 7,
+        "best_dim_abs_corr": 0.12791083953779575
+      },
+      "dot_pct_death": {
+        "n_players": 649,
+        "r2": 0.07395793244429272,
+        "r2_shuffled": -0.014300461341940185,
+        "reliability": 0.5667259837207118,
+        "r2_over_reliability": 0.13050033802709834,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.1653362335711303
+      },
+      "dot_pct_middle": {
+        "n_players": 996,
+        "r2": 0.10069321468090098,
+        "r2_shuffled": -0.014827093983869277,
+        "reliability": 0.7083224035190713,
+        "r2_over_reliability": 0.1421573201421263,
+        "best_dim": 4,
+        "best_dim_abs_corr": 0.17617807026855936
+      },
+      "dot_pct_powerplay": {
+        "n_players": 830,
+        "r2": 0.1003383891908125,
+        "r2_shuffled": -0.012580065671274898,
+        "reliability": 0.6666475440486797,
+        "r2_over_reliability": 0.15051190105859844,
+        "best_dim": 7,
+        "best_dim_abs_corr": 0.21242047815574433
+      },
+      "boundary_pct_death": {
+        "n_players": 649,
+        "r2": 0.03886312502894729,
+        "r2_shuffled": -0.0210034081336834,
+        "reliability": 0.5407451026428938,
+        "r2_over_reliability": 0.07186958298651919,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.2426708173583053
+      },
+      "boundary_pct_middle": {
+        "n_players": 996,
+        "r2": 0.09496039660650746,
+        "r2_shuffled": -0.006668903961721151,
+        "reliability": 0.6266712893626046,
+        "r2_over_reliability": 0.15153142998316213,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.22408730672239083
+      },
+      "boundary_pct_powerplay": {
+        "n_players": 830,
+        "r2": 0.03732131493784996,
+        "r2_shuffled": -0.018261051615347412,
+        "reliability": 0.5341539268517206,
+        "r2_over_reliability": 0.06986996268626185,
+        "best_dim": 1,
+        "best_dim_abs_corr": 0.15828474582509158
+      },
+      "wicket_rate_death": {
+        "n_players": 649,
+        "r2": -0.007897474849795305,
+        "r2_shuffled": -0.023109477673445955,
+        "reliability": 0.11414833261030345,
+        "r2_over_reliability": -0.06918607279842517,
+        "best_dim": 4,
+        "best_dim_abs_corr": 0.08310909339045096
+      },
+      "wicket_rate_middle": {
+        "n_players": 996,
+        "r2": -0.0019311579374914345,
+        "r2_shuffled": -0.007777858345248356,
+        "reliability": 0.15109069733263614,
+        "r2_over_reliability": -0.012781448306111547,
+        "best_dim": 0,
+        "best_dim_abs_corr": 0.1270424321422243
+      },
+      "wicket_rate_powerplay": {
+        "n_players": 830,
+        "r2": 0.013109479030354199,
+        "r2_shuffled": -0.013634705924949753,
+        "reliability": 0.1114935605164218,
+        "r2_over_reliability": 0.11758059362023257,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.09018500974460145
+      }
+    }
+  }
+}

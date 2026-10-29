@@ -1,0 +1,246 @@
+{
+  "dim": 8,
+  "phases": [
+    "powerplay",
+    "middle",
+    "death"
+  ],
+  "min_phase_balls": 50,
+  "min_train_balls": 300,
+  "cut_offs": {
+    "strong": 0.5,
+    "weak": 0.2
+  },
+  "batter": {
+    "eligible_players": 1139,
+    "mean_r2": 0.10066557332550043,
+    "mean_r2_over_reliability": 0.16314315826417453,
+    "verdict": "does_not",
+    "targets": {
+      "strike_rate_death": {
+        "n_players": 541,
+        "r2": 0.046697161279382504,
+        "r2_shuffled": -0.014122101458338587,
+        "reliability": 0.6248989882059034,
+        "r2_over_reliability": 0.07472753542688702,
+        "best_dim": 1,
+        "best_dim_abs_corr": 0.22250805498697993
+      },
+      "strike_rate_middle": {
+        "n_players": 996,
+        "r2": 0.0919276765980751,
+        "r2_shuffled": -0.012238445999897651,
+        "reliability": 0.6824054238299248,
+        "r2_over_reliability": 0.1347112338031272,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.18617788250694017
+      },
+      "strike_rate_powerplay": {
+        "n_players": 717,
+        "r2": 0.13888686189155663,
+        "r2_shuffled": -0.02649642413973008,
+        "reliability": 0.7333736242508444,
+        "r2_over_reliability": 0.1893807703180385,
+        "best_dim": 7,
+        "best_dim_abs_corr": 0.23474378020192962
+      },
+      "dot_pct_death": {
+        "n_players": 541,
+        "r2": 0.11050301608894675,
+        "r2_shuffled": -0.014716448481832511,
+        "reliability": 0.587820842073724,
+        "r2_over_reliability": 0.18798757747192563,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.23681979172733592
+      },
+      "dot_pct_middle": {
+        "n_players": 996,
+        "r2": 0.08480917982044833,
+        "r2_shuffled": -0.012589362754246602,
+        "reliability": 0.7688262543722356,
+        "r2_over_reliability": 0.11030994238054083,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.24001285280876028
+      },
+      "dot_pct_powerplay": {
+        "n_players": 717,
+        "r2": 0.03280640926701994,
+        "r2_shuffled": -0.03449901011150058,
+        "reliability": 0.7099193079562671,
+        "r2_over_reliability": 0.04621146220330847,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.1580633670791806
+      },
+      "boundary_pct_death": {
+        "n_players": 541,
+        "r2": 0.0976820499597073,
+        "r2_shuffled": -0.017741703075052184,
+        "reliability": 0.6249153883343816,
+        "r2_over_reliability": 0.1563124413051568,
+        "best_dim": 1,
+        "best_dim_abs_corr": 0.2734365066226115
+      },
+      "boundary_pct_middle": {
+        "n_players": 996,
+        "r2": 0.21242829238434568,
+        "r2_shuffled": -0.010946828001127562,
+        "reliability": 0.6828515333511935,
+        "r2_over_reliability": 0.31109001299568423,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.24950692631994023
+      },
+      "boundary_pct_powerplay": {
+        "n_players": 717,
+        "r2": 0.20959955128259622,
+        "r2_shuffled": -0.028236057341596732,
+        "reliability": 0.7164520531543922,
+        "r2_over_reliability": 0.2925520980221526,
+        "best_dim": 7,
+        "best_dim_abs_corr": 0.2522362116830226
+      },
+      "wicket_rate_death": {
+        "n_players": 541,
+        "r2": 0.004699441707892604,
+        "r2_shuffled": -0.042414683618672955,
+        "reliability": 0.378376597109591,
+        "r2_over_reliability": 0.012420011554074744,
+        "best_dim": 1,
+        "best_dim_abs_corr": 0.13239988219085272
+      },
+      "wicket_rate_middle": {
+        "n_players": 996,
+        "r2": 0.09084838790441363,
+        "r2_shuffled": -0.0056041820048704505,
+        "reliability": 0.38677243275103756,
+        "r2_over_reliability": 0.23488847759450332,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.15951071687903887
+      },
+      "wicket_rate_powerplay": {
+        "n_players": 717,
+        "r2": 0.08709885172162024,
+        "r2_shuffled": -0.02832178817888864,
+        "reliability": 0.4205107537932783,
+        "r2_over_reliability": 0.20712633609469533,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.19949826319167988
+      }
+    }
+  },
+  "bowler": {
+    "eligible_players": 1220,
+    "mean_r2": 0.04766926069044517,
+    "mean_r2_over_reliability": 0.08668252599374777,
+    "verdict": "does_not",
+    "targets": {
+      "strike_rate_death": {
+        "n_players": 649,
+        "r2": 0.05036090239042801,
+        "r2_shuffled": -0.04208126823501179,
+        "reliability": 0.4900693117343347,
+        "r2_over_reliability": 0.10276281575804633,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.17863982534387535
+      },
+      "strike_rate_middle": {
+        "n_players": 996,
+        "r2": 0.038792982040934176,
+        "r2_shuffled": -0.008753831236455456,
+        "reliability": 0.6183604861010408,
+        "r2_over_reliability": 0.06273522146529162,
+        "best_dim": 1,
+        "best_dim_abs_corr": 0.14494892694413
+      },
+      "strike_rate_powerplay": {
+        "n_players": 830,
+        "r2": 0.02486107097723933,
+        "r2_shuffled": -0.008642682795068968,
+        "reliability": 0.5685374466213213,
+        "r2_over_reliability": 0.043728115227910806,
+        "best_dim": 7,
+        "best_dim_abs_corr": 0.12854023018511165
+      },
+      "dot_pct_death": {
+        "n_players": 649,
+        "r2": 0.08153452977087539,
+        "r2_shuffled": -0.01644733495099171,
+        "reliability": 0.5667259837207118,
+        "r2_over_reliability": 0.14386940446170968,
+        "best_dim": 6,
+        "best_dim_abs_corr": 0.1815497868068656
+      },
+      "dot_pct_middle": {
+        "n_players": 996,
+        "r2": 0.07083956718763695,
+        "r2_shuffled": -0.015060074023401038,
+        "reliability": 0.7083224035190713,
+        "r2_over_reliability": 0.10001034392769935,
+        "best_dim": 0,
+        "best_dim_abs_corr": 0.15911544642086978
+      },
+      "dot_pct_powerplay": {
+        "n_players": 830,
+        "r2": 0.06699194059975233,
+        "r2_shuffled": -0.00867134196817898,
+        "reliability": 0.6666475440486797,
+        "r2_over_reliability": 0.10049079337020775,
+        "best_dim": 7,
+        "best_dim_abs_corr": 0.17896171654801535
+      },
+      "boundary_pct_death": {
+        "n_players": 649,
+        "r2": 0.057145116035972165,
+        "r2_shuffled": -0.02465116678749646,
+        "reliability": 0.5407451026428938,
+        "r2_over_reliability": 0.10567847171740473,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.24841549922233555
+      },
+      "boundary_pct_middle": {
+        "n_players": 996,
+        "r2": 0.11667388850504135,
+        "r2_shuffled": -0.005657902802452153,
+        "reliability": 0.6266712893626046,
+        "r2_over_reliability": 0.1861803635901556,
+        "best_dim": 5,
+        "best_dim_abs_corr": 0.23593669832501904
+      },
+      "boundary_pct_powerplay": {
+        "n_players": 830,
+        "r2": 0.05171020555980499,
+        "r2_shuffled": -0.019968535476831972,
+        "reliability": 0.5341539268517206,
+        "r2_over_reliability": 0.09680768587546035,
+        "best_dim": 1,
+        "best_dim_abs_corr": 0.15033968314045382
+      },
+      "wicket_rate_death": {
+        "n_players": 649,
+        "r2": -0.005242744425797641,
+        "r2_shuffled": -0.019271283759486613,
+        "reliability": 0.11414833261030345,
+        "r2_over_reliability": -0.04592922477191236,
+        "best_dim": 4,
+        "best_dim_abs_corr": 0.07735644049125884
+      },
+      "wicket_rate_middle": {
+        "n_players": 996,
+        "r2": 0.008870032221873991,
+        "r2_shuffled": -0.008033054224654279,
+        "reliability": 0.15109069733263614,
+        "r2_over_reliability": 0.058706673398601306,
+        "best_dim": 0,
+        "best_dim_abs_corr": 0.16805803780846107
+      },
+      "wicket_rate_powerplay": {
+        "n_players": 830,
+        "r2": 0.009493637421581047,
+        "r2_shuffled": -0.01413690194784234,
+        "reliability": 0.1114935605164218,
+        "r2_over_reliability": 0.08514964790439836,
+        "best_dim": 7,
+        "best_dim_abs_corr": 0.07604813239646416
+      }
+    }
+  }
+}

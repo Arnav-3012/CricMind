@@ -1,0 +1,41 @@
+{
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "device": "mps",
+  "val_key": 4359684292168833326,
+  "tuning": {
+    "holdout_year": 2023,
+    "fit_rows": 1437141,
+    "holdout_rows": 198703,
+    "holdout_log_loss_by_dim": {
+      "8": 1.437133310574569,
+      "16": 1.4380151400796928,
+      "32": 1.4396729960343952
+    },
+    "epochs_by_dim": {
+      "8": 15,
+      "16": 14,
+      "32": 10
+    },
+    "dim": 8,
+    "dim_at_grid_edge": false,
+    "epochs": 15,
+    "ablation_epochs": 10,
+    "ablation_gain": -0.0011429276285499501,
+    "ablation_min_gain": 0.002,
+    "use_ablation": false
+  },
+  "final": {
+    "dim": 8,
+    "epochs": 15,
+    "ablation": false
+  },
+  "per_seed_val_log_loss": [
+    1.430895966909758,
+    1.430483172461363,
+    1.4306154476401036
+  ]
+}

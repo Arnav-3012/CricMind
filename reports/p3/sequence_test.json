@@ -1,0 +1,47 @@
+{
+  "snapshot": "2026-10-28",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "threshold": 0.002,
+  "dim": 8,
+  "epochs": {
+    "without_sequence": 15,
+    "with_sequence": 13
+  },
+  "holdout_log_loss_with_sequence": 1.4367456889710541,
+  "per_seed_val_log_loss": {
+    "without_sequence": [
+      1.430895966909758,
+      1.430483172461363,
+      1.4306154476401036
+    ],
+    "with_sequence": [
+      1.4296832014822258,
+      1.430192301583874,
+      1.4296005024690641
+    ]
+  },
+  "val_log_loss": {
+    "without_sequence": 1.430664862337075,
+    "with_sequence": 1.429825335178388
+  },
+  "with_minus_without": {
+    "value": -0.0008395271586867986,
+    "lo": -0.0011448268638855885,
+    "hi": -0.0005508380141880332,
+    "width": 0.0005939888496975553
+  },
+  "seed_spread": {
+    "without_sequence": 0.00041279444839514845,
+    "with_sequence": 0.0005917991148098878
+  },
+  "verdict": {
+    "gain_at_least_threshold": false,
+    "ci_excludes_0": true,
+    "seed_spread_ok": true,
+    "build_phase_3b": false
+  }
+}

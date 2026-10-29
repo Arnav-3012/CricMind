@@ -1,0 +1,33 @@
+{
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "val_key": 4359684292168833326,
+  "tuning": {
+    "holdout_year": 2023,
+    "fit_rows": 1437141,
+    "holdout_rows": 198703,
+    "base": {
+      "best_iteration": 188,
+      "holdout_log_loss": 1.4320391748027381
+    },
+    "ablation": {
+      "best_iteration": 179,
+      "holdout_log_loss": 1.4323369679192497
+    },
+    "ablation_gain": -0.0002977931165115688,
+    "ablation_min_gain": 0.002,
+    "use_ablation": false
+  },
+  "final": {
+    "trees": 188,
+    "ablation": false
+  },
+  "per_seed_val_log_loss": [
+    1.4245360679568462,
+    1.424597570404969,
+    1.4245548070823486
+  ]
+}

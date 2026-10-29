@@ -1,0 +1,21 @@
+{
+  "holdout_year": 2023,
+  "seed": 42,
+  "dim": 8,
+  "holdout_log_loss": {
+    "with_ids": 1.4370888151885157,
+    "without_ids": 1.438881801476399
+  },
+  "epochs": {
+    "with_ids": 15,
+    "without_ids": 10
+  },
+  "E_without_minus_with": {
+    "value": 0.0017929862878834643,
+    "lo": 0.0010064045204544356,
+    "hi": 0.002627740513471422,
+    "width": 0.0016213359930169864
+  },
+  "threshold": 0.002,
+  "embeddings_carry_signal": false
+}
