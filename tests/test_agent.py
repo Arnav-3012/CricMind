@@ -59,6 +59,10 @@ def box(tmp_path):
         "select * from '/etc/passwd'",
         "select * from deliveries where outcome = 'a/b'",
         "with a as (select 1) copy a to 'x.csv'",
+        "select * from parquet_scan('secret.parquet')",  # D-062: a bare file name has no slash
+        "select * from deliveries, parquet_metadata('x.parquet')",
+        "select * from range(100000000)",
+        "select * from query_table('deliveries')",
         "",
     ],
 )
@@ -70,6 +74,9 @@ def test_guard_rejects(sql):
 def test_guard_accepts_and_limits():
     assert guard_sql("select 1;").endswith("limit 21")
     assert guard_sql("WITH a AS (select 1 as x) select x from a", limit=5).endswith("limit 6")
+    # D-062: normal analytics must still pass (extract/from inside a function, joins, group by)
+    ok = "select extract(year from d) y, count(*) n from t join u using (k) group by 1"
+    assert guard_sql(ok).startswith("select * from (")
 
 
 def test_sql_tool_truncates(box):
@@ -85,6 +92,16 @@ def test_player_profile_counts_legal_balls_only(box):
     assert bat["strike_rate"] == 125.0 and bat["boundary_pct"] == 25.0 and bat["dot_pct"] == 25.0
     assert bat["by_phase"]["powerplay"]["balls"] == 3 and bat["by_phase"]["death"]["balls"] == 1
     assert out["bowling"] is None
+
+
+def test_dashboard_pickers_list_players_and_pairs(box):
+    bats = box.players("batter", min_balls=1)
+    assert [(r["id"], r["balls"]) for r in bats] == [("b1", 4), ("b2", 1), ("b3", 1)]
+    assert [r["id"] for r in box.players("bowler", min_balls=1)] == ["w1"]
+    assert box.players("batter", min_balls=5) == []
+    assert box.pairs(k=1, min_balls=1)[0] == {
+        "batter_id": "b1", "bowler_id": "w1", "batter": "A Bat", "bowler": "C Bowl", "balls": 4,
+    }  # fmt: skip
 
 
 def test_player_profile_ambiguous_and_missing(box):

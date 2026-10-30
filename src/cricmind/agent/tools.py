@@ -24,9 +24,13 @@ ROW_LIMIT = 20
 MAX_CHARS = 4000
 FORBIDDEN = re.compile(
     r"\b(insert|update|delete|drop|create|alter|attach|detach|copy|pragma|install|load|export|call|vacuum"
-    r"|truncate|checkpoint|getenv|current_setting)\b|\bread_\w+|\bglob\b|\bduckdb_\w+|\bpragma_\w+",
+    r"|truncate|checkpoint|getenv|current_setting|sniff_csv|query|query_table)\b|\bread_\w+|\bglob\b"
+    r"|\bduckdb_\w+|\bpragma_\w+|\bparquet_\w+|\w+_scan\b",
     re.I,
 )
+# D-062: file-reading table functions take a bare file name too ('x.parquet' has no slash), so no function
+# call is allowed in FROM or JOIN at all; the agent only ever queries the views.
+TABLE_FUNCTION = re.compile(r"\b(from|join)\s+\w+\s*\(|,\s*\w+\s*\(\s*'", re.I)
 PATH_LITERAL = re.compile(r"'[^']*[/\\][^']*'|\bfrom\s+['\"]", re.I)  # replacement scans read files by path
 PHASE_SQL = (
     f"case when \"over\" < {config.PHASE_EDGES[0]} then 'powerplay' "
@@ -59,7 +63,7 @@ def guard_sql(sql: str, limit: int = ROW_LIMIT) -> str:
         raise ValueError("send exactly one statement with no comments")
     if not re.match(r"(select|with)\b", s, re.I):
         raise ValueError("only SELECT queries are allowed")
-    if FORBIDDEN.search(s) or PATH_LITERAL.search(s):
+    if FORBIDDEN.search(s) or PATH_LITERAL.search(s) or TABLE_FUNCTION.search(s):
         raise ValueError("query uses a forbidden keyword, function or file path")
     return f"select * from ({s}) as q limit {limit + 1}"
 
@@ -181,6 +185,36 @@ class Toolbox:
     def sql(self, query: str) -> dict:
         df = self.con.execute(guard_sql(query)).df()
         return {"rows": df.head(ROW_LIMIT).round(3).to_dict("records"), "truncated": len(df) > ROW_LIMIT}
+
+    def players(self, role: str = "any", min_balls: int = 50) -> list[dict]:
+        """Players with at least `min_balls` legal balls in the role, most balls first. Not an agent tool:
+        it feeds the dashboard's dropdowns (names collide, so callers keep the id)."""
+        cols = {"batter": ["batter_id"], "bowler": ["bowler_id"], "any": ["batter_id", "bowler_id"]}[role]
+        balls = " union all ".join(f"select {c} as id from legal_deliveries" for c in cols)
+        return (
+            self.con.execute(
+                f"with b as ({balls}) select p.player_id as id, p.name, count(*) as balls "
+                "from b join players p on p.player_id = b.id group by 1, 2 having count(*) >= ? "
+                "order by balls desc, id",
+                [int(min_balls)],
+            )
+            .df()
+            .to_dict("records")
+        )
+
+    def pairs(self, k: int = 100, min_balls: int = 30) -> list[dict]:
+        """The batter-bowler pairs with the most shared legal balls (unique tie-break), for the dashboard."""
+        return (
+            self.con.execute(
+                "select d.batter_id as batter_id, d.bowler_id as bowler_id, pb.name as batter, "
+                "pw.name as bowler, count(*) as balls from legal_deliveries d "
+                "join players pb on pb.player_id = d.batter_id join players pw on pw.player_id = d.bowler_id "
+                "group by 1, 2, 3, 4 having count(*) >= ? order by balls desc, batter_id, bowler_id limit ?",
+                [int(min_balls), int(k)],
+            )
+            .df()
+            .to_dict("records")
+        )
 
     def _find(self, player: str) -> pd.DataFrame:
         parts = player.split()
