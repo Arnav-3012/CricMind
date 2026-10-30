@@ -21,6 +21,7 @@ dev = [
     "matplotlib>=3.11.2",
     "pytest",
     "ruff",
+    "streamlit>=1.66.1",
 ]
 
 [build-system]
