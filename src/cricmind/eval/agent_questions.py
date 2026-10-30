@@ -49,7 +49,7 @@ def top_players(con, role: str, n: int) -> pd.DataFrame:
     return con.execute(
         f"select d.{col} as id, p.name, count(*) as balls from legal_deliveries d "
         f"join players p on p.player_id = d.{col} where {names_unique(con)} "
-        f"group by all order by balls desc limit {n}"
+        f"group by all order by balls desc, id limit {n}"  # id breaks ties: the order must not vary by run
     ).df()
 
 
@@ -61,7 +61,8 @@ def pair_pool(con) -> pd.DataFrame:
         f"join players pw on pw.player_id = d.bowler_id "
         f"where pb.name in (select name from players group by name having count(*) = 1) "
         f"and pw.name in (select name from players group by name having count(*) = 1) "
-        f"group by all having balls >= {MIN_PAIR_BALLS} order by balls desc limit {PAIR_POOL}"
+        f"group by all having balls >= {MIN_PAIR_BALLS} "
+        f"order by balls desc, d.batter_id, d.bowler_id limit {PAIR_POOL}"
     ).df()
 
 
