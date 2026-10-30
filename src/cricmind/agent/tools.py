@@ -183,15 +183,22 @@ class Toolbox:
         return {"rows": df.head(ROW_LIMIT).round(3).to_dict("records"), "truncated": len(df) > ROW_LIMIT}
 
     def _find(self, player: str) -> pd.DataFrame:
-        return self.con.execute(
-            "with m as (select player_id as id, name from players where player_id = ? or name ilike ?), "
-            "b as (select batter_id as id, count(*) as n from legal_deliveries group by 1), "
-            "w as (select bowler_id as id, count(*) as n from legal_deliveries group by 1) "
-            "select m.id, m.name, coalesce(b.n, 0) + coalesce(w.n, 0) as balls from m "
-            "left join b using (id) left join w using (id) "
-            "where coalesce(b.n, 0) + coalesce(w.n, 0) > 0 order by balls desc limit 5",
-            [player, f"%{player}%"],
-        ).df()
+        parts = player.split()
+        # Registry names are "V Kohli" but people type "Virat Kohli": retry as first initial + surname.
+        patterns = [f"%{player}%"] + ([f"{parts[0][0]}% {parts[-1]}"] if len(parts) > 1 else [])
+        for pattern in patterns:
+            found = self.con.execute(
+                "with m as (select player_id as id, name from players where player_id = ? or name ilike ?), "
+                "b as (select batter_id as id, count(*) as n from legal_deliveries group by 1), "
+                "w as (select bowler_id as id, count(*) as n from legal_deliveries group by 1) "
+                "select m.id, m.name, coalesce(b.n, 0) + coalesce(w.n, 0) as balls from m "
+                "left join b using (id) left join w using (id) "
+                "where coalesce(b.n, 0) + coalesce(w.n, 0) > 0 order by balls desc limit 5",
+                [player, pattern],
+            ).df()
+            if len(found):
+                break
+        return found
 
     def _role(self, where: str, params: list, wkey: str) -> dict | None:
         df = self.con.execute(

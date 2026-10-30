@@ -94,6 +94,12 @@ def test_player_profile_ambiguous_and_missing(box):
     assert json.loads(box.call("player_profile", {"player": "C Bowl"}))["bowling"]["wickets"] == 1
 
 
+def test_full_names_resolve_to_registry_style_names(box):
+    assert json.loads(box.call("player_profile", {"player": "Barry Bat"}))["id"] == "b2"  # "B Bat"
+    assert json.loads(box.call("player_profile", {"player": "Cecil Bowl"}))["bowling"]["wickets"] == 1
+    assert json.loads(box.call("player_profile", {"player": "Zed Bat"})) == {"found": False}  # no Z initial
+
+
 def test_top_players_and_bad_args(box):
     out = json.loads(box.call("top_players", {"role": "batter", "metric": "runs", "season_year": 2024}))
     assert out["rows"][0]["id"] == "b2" and out["rows"][0]["value"] == 6
@@ -219,6 +225,23 @@ def test_numbers_and_answer_ok():
     assert answer_ok({**Q, "truth": "Rashid Khan"}, "It was rashid khan.") is True
     wi = {**Q, "category": "what-if", "truth": 0.074, "tolerance": 0.01}
     assert answer_ok(wi, "about 7.4%") is True
+    assert answer_ok({**wi, "truth": 0.034}, "He is 3 wickets down") is False  # a bare 3 is not 3%
+    assert answer_ok({**wi, "truth": 0.078}, "78/1000 (train balls: pair 4)") is True
+    assert answer_ok({**Q, "truth": "PWH de Silva"}, "PWH de Silva took 69") is True  # no-break spaces
+    listed = {**Q, "category": "archetype", "truth": [0.5, 1.2], "tolerance": 0.05}
+    assert answer_ok(listed, "the mean is 1.21") is True and answer_ok(listed, "nothing quoted") is False
+    both = {**Q, "category": "mixed", "truth": [138.65, 0.078], "tolerance": 0.01, "all_of": True}
+    assert answer_ok(both, "strike rate 138.65 and probability 7.8%") is True
+    assert answer_ok(both, "strike rate 138.65 only") is False  # a two-part question needs both numbers
+
+
+def test_required_tools_must_all_be_called():
+    q = {**Q, "required_tools": ["sql", "matchup"], "acceptable_first_tools": ["sql", "matchup"]}
+    res = {"answer": "125", "tokens": 1, "latency": 0.1, "stopped": None}
+    one = score_one(q, {**res, "calls": [{"name": "sql", "args": {}}]})
+    both = score_one(q, {**res, "calls": [{"name": "matchup", "args": {}}, {"name": "sql", "args": {}}]})
+    assert one["tools_ok"] is False and both["tools_ok"] is True
+    assert score_one(Q, {**res, "calls": []})["tools_ok"] is None  # single-tool questions are not checked
 
 
 def test_score_and_summarise():

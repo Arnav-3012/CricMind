@@ -1,0 +1,25 @@
+{
+  "openai/gpt-oss-120b": {
+    "n_questions": 30,
+    "numeric_accuracy": 1.0,
+    "numeric_accuracy_by_category": {
+      "lookup": 1.0,
+      "matchup": 1.0,
+      "what-if": 1.0,
+      "archetype": null,
+      "next-ball": null,
+      "mixed": null
+    },
+    "required_tools_used": null,
+    "n_unscored": 0,
+    "tool_choice_accuracy": 0.8333,
+    "refusal_correctness": 1.0,
+    "false_refusal_rate": 0.0,
+    "tokens_per_question": 2641.6,
+    "latency_p50_s": 5.87,
+    "latency_p95_s": 14.16,
+    "n_stopped_early": 0,
+    "cost_usd": 0.0,
+    "passes_80_gate": true
+  }
+}
