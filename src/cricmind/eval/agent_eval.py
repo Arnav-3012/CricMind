@@ -5,8 +5,8 @@ uv run --env-file .env python -m cricmind.eval.agent_eval [--limit N]
 Rules fixed before any model run: a numeric answer is right if any number in it is within the question's
 tolerance of the SQL truth (what-if questions also accept a percentage); a name answer must contain the truth
 name; a refusal is right iff the answer starts with CANNOT_ANSWER:; tool choice is right iff the first tool
-called is in the question's `acceptable_first_tools`. What-if questions with no truth yet (filled from the
-`matchup` tool) are left out of numeric accuracy and counted in `n_unscored`.
+called is in the question's `acceptable_first_tools`. What-if truths come from the saved D-058 chain; a
+question with no truth is left out of numeric accuracy and counted in `n_unscored`.
 """
 
 import argparse
@@ -20,6 +20,7 @@ from cricmind import config
 from cricmind.agent.agent import run
 from cricmind.agent.llm import LLM
 from cricmind.agent.prompts import REFUSAL
+from cricmind.agent.serving import Serving
 from cricmind.agent.tools import Toolbox
 from cricmind.data.db import connect
 
@@ -98,7 +99,7 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=None)
     args = ap.parse_args()
     questions = [json.loads(line) for line in QUESTIONS.read_text().splitlines()][: args.limit]
-    llm, box = LLM(), Toolbox(connect())
+    llm, box = LLM(), Toolbox(connect(), Serving())
     rows = []
     for q in questions:
         rows.append(score_one(q, run(q["question"], llm, box)))

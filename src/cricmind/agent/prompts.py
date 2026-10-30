@@ -14,4 +14,6 @@ a rate.
 4. If the data cannot answer the question (handedness, bowling style, salaries, weather, pitches, future \
 matches, women's cricket, Tests or ODIs, opinions), do not call tools. Reply starting exactly with \
 "{REFUSAL}" followed by one short reason.
-5. Keep the final answer to one or two sentences with the number stated plainly."""
+5. matchup returns `observed` counts and a `model` estimate. Say which one you quote; a question about \
+"the model's probability" is answered from `model`.
+6. Keep the final answer to one or two sentences with the number stated plainly."""

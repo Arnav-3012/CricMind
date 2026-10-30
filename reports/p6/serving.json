@@ -1,0 +1,31 @@
+{
+  "val_key": 4359684292168833326,
+  "tolerance": 1e-06,
+  "checks": {
+    "chain_role_arch": {
+      "reported": 1.4567916431529018,
+      "reproduced": 1.4567916431529018,
+      "abs_diff": 0.0
+    },
+    "lgbm_stats_seed42": {
+      "reported": 1.4245360679568462,
+      "reproduced": 1.4245360679568462,
+      "abs_diff": 0.0
+    }
+  },
+  "files": [
+    "chain_bat.parquet",
+    "chain_bowl.parquet",
+    "chain_cell.parquet",
+    "chain_pair.parquet",
+    "labels.parquet",
+    "manifest.json",
+    "next_ball.txt",
+    "phase_prior.parquet",
+    "rates_bat.parquet",
+    "rates_bowl.parquet",
+    "rates_venue.parquet",
+    "state_defaults.parquet"
+  ],
+  "passed": true
+}

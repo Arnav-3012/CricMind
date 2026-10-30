@@ -2,6 +2,7 @@
 
 import json
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -99,6 +100,68 @@ def test_top_players_and_bad_args(box):
     assert "error" in json.loads(box.call("top_players", {"role": "batter", "metric": "wickets"}))
     assert "error" in json.loads(box.call("top_players", {"bogus": 1}))
     assert "error" in json.loads(box.call("nope", {}))
+
+
+class StubServing:
+    """Stands in for the D-058 artifact: uniform probabilities, fixed counts. Tests the tool wiring only."""
+
+    def chain_proba(self, df):
+        return np.full((len(df), 7), 1 / 7), {"cell": np.zeros(len(df)), "bat": np.full(len(df), 4.0)}
+
+    def archetype(self, player_id):
+        return {"batter": {"bin": 1, "placed": "clustered"}, "bowler": None}
+
+    def state_frame(self, batter_id, bowler_id, over, innings=1, competition=None, **given):
+        if not 0 <= over < 20:
+            raise ValueError("over must be 0-19")
+        return pd.DataFrame([{"over": over}]), {"state": {"over": over, **given}, "assumed": ["score_before"]}
+
+    def next_ball_proba(self, frame):
+        return np.full((len(frame), 7), 1 / 7)
+
+    def train_balls(self, prefix, key):
+        return 3
+
+
+@pytest.fixture()
+def sbox(box):
+    return Toolbox(box.con, StubServing())
+
+
+def test_serving_tools_are_offered_only_with_an_artifact(box, sbox):
+    serving = {"matchup", "archetype_of", "predict_next_ball"}
+    assert not serving & set(box.tools) and serving <= set(sbox.tools)
+
+
+def test_matchup_keeps_observed_counts_and_model_apart(sbox):
+    out = json.loads(sbox.call("matchup", {"batter": "b1", "bowler": "C Bowl"}))
+    obs = out["observed"]
+    assert (obs["balls"], obs["runs"], obs["dismissals"]) == (4, 5, 1)  # legal, no super over
+    assert set(out["model"]) == {"powerplay", "middle", "death"}
+    assert abs(sum(out["model"]["death"]["p"].values()) - 1) < 1e-3
+    assert out["model"]["death"]["train_balls"] == {"cell": 0, "bat": 4}
+    death = json.loads(sbox.call("matchup", {"batter": "b1", "bowler": "w1", "phase": "death"}))
+    assert death["observed"]["balls"] == 1 and list(death["model"]) == ["death"]
+    none = json.loads(sbox.call("matchup", {"batter": "b2", "bowler": "w1", "phase": "death"}))
+    assert none["observed"] == {"balls": 0}
+
+
+def test_matchup_and_archetype_pass_name_problems_back(sbox):
+    assert json.loads(sbox.call("matchup", {"batter": "A Bat", "bowler": "w1"}))["batter"]["ambiguous"]
+    assert json.loads(sbox.call("matchup", {"batter": "b1", "bowler": "Nobody"}))["bowler"]["found"] is False
+    assert "error" in json.loads(sbox.call("matchup", {"batter": "b1", "bowler": "w1", "phase": "late"}))
+    out = json.loads(sbox.call("archetype_of", {"player": "B Bat"}))
+    assert out["id"] == "b2" and out["batter"]["bin"] == 1 and out["bowler"] is None
+
+
+def test_predict_next_ball_lists_assumed_inputs_and_rejects_bad_ones(sbox):
+    args = {"batter": "b1", "bowler": "w1", "over": 17, "wickets_before": 3}
+    out = json.loads(sbox.call("predict_next_ball", args))
+    assert out["assumed"] == ["score_before"] and out["state"]["wickets_before"] == 3
+    assert out["batter"]["train_balls"] == 3 and abs(sum(out["p"].values()) - 1) < 1e-3
+    assert "error" in json.loads(sbox.call("predict_next_ball", {"batter": "b1", "bowler": "w1", "over": 25}))
+    bad = {"batter": "b1", "bowler": "w1", "over": 1, "pitch": "green"}
+    assert "error" in json.loads(sbox.call("predict_next_ball", bad))
 
 
 class Fake:

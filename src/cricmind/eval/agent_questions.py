@@ -3,7 +3,7 @@
 uv run python -m cricmind.eval.agent_questions
 
 Serves the matchup goal: 9 head-to-head lookups (observed batter-vs-bowler numbers), 4 what-if probability
-questions (truth filled later from the `matchup` tool, because it is a model output, not a count), 9
+questions (truth from the saved D-058 chain that the `matchup` tool serves: a model output, not a count), 9
 single-player lookups the matchup answers build on, and 8 questions the data cannot answer (the agent
 must refuse).
 All counts are over `legal_deliveries` of every season in the snapshot (descriptive, not a held-out claim).
@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 
 from cricmind import config
+from cricmind.agent.serving import Serving
 from cricmind.data.db import connect
 
 OUT = config.ROOT / "evals" / "agent_questions.jsonl"
@@ -219,7 +220,8 @@ def matchup_obs(pairs: pd.DataFrame) -> tuple[list[dict], pd.DataFrame]:
     return out, left
 
 
-def whatif(left: pd.DataFrame) -> list[dict]:
+def whatif(left: pd.DataFrame, srv: Serving) -> list[dict]:
+    """D-058(7): the truth is the chain probability the tool returns; it tests quoting, not model accuracy."""
     out = []
     for i, (phase, cls) in enumerate(WHATIF):
         row = left.sample(1, random_state=config.SEED + 100 + i).iloc[0]
@@ -228,11 +230,13 @@ def whatif(left: pd.DataFrame) -> list[dict]:
             f"What is the model's probability that {row['bat']} is {CLASS_WORDS[cls]} on a given ball "
             f"against {row['bowl']} in the {phase} overs? Give it as a fraction."
         )
+        frame = pd.DataFrame([{"batter_id": row["batter_id"], "bowler_id": row["bowler_id"], "phase": phase}])
+        p = srv.chain_proba(frame)[0][0, config.OUTCOME_CLASSES.index(cls)]
         out.append(
             rec(
                 "what-if",
                 q,
-                None,
+                round(float(p), 4),
                 0.01,
                 f"tool:matchup:{phase}:{cls}",
                 ["matchup"],
@@ -251,7 +255,7 @@ def main() -> None:
     con = connect()
     bats, bowls = top_players(con, "batter", 30), top_players(con, "bowler", 30)
     obs, left = matchup_obs(pair_pool(con))
-    rows = lookups(con, bats, bowls) + obs + whatif(left) + refusals(bats, bowls)
+    rows = lookups(con, bats, bowls) + obs + whatif(left, Serving()) + refusals(bats, bowls)
     for i, r in enumerate(rows):
         r["id"] = f"q{i + 1:02d}"
     OUT.parent.mkdir(exist_ok=True)

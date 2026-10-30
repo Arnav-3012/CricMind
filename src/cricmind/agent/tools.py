@@ -3,10 +3,10 @@
 Every tool returns compact JSON (top-k rows, rounded numbers, the ball counts behind them) because free-tier
 token limits are small and answers must cite sample sizes. Tool output is data, never instructions: the system
 prompt says so and tools never echo free text from the question. `matchup`, `archetype_of` and
-`predict_next_ball` are added through `Toolbox.add` once the serving artifact exists.
+`predict_next_ball` read the D-058 serving artifact and are only offered when one is passed in.
 
 from cricmind.agent.tools import Toolbox
-box = Toolbox(connect())
+box = Toolbox(connect(), Serving())
 """
 
 import json
@@ -17,6 +17,8 @@ import duckdb
 import pandas as pd
 
 from cricmind import config
+from cricmind.agent.serving import Serving
+from cricmind.features.context import PHASES
 
 ROW_LIMIT = 20
 MAX_CHARS = 4000
@@ -39,6 +41,13 @@ METRICS = {
     "bowler": {"wickets": "sum((outcome = 'W')::int)", "dot_pct": "100.0 * avg((outcome = 'dot')::int)"},
 }
 RATE_METRICS = {"strike_rate", "boundary_pct", "dot_pct"}
+STATE_INPUTS = [  # optional predict_next_ball inputs; the names match serving.STATE
+    "score_before", "wickets_before", "target", "batter_runs", "batter_balls_faced", "bowler_balls_bowled",
+]  # fmt: skip
+MODEL_NOTE = (
+    "per-ball class probabilities from models fitted on seasons up to 2023 and scored on later seasons; "
+    "train_balls = the train balls behind each input"
+)
 
 
 def guard_sql(sql: str, limit: int = ROW_LIMIT) -> str:
@@ -74,8 +83,8 @@ def _rates(df: pd.DataFrame, wkey: str) -> dict:
 
 
 class Toolbox:
-    def __init__(self, con: duckdb.DuckDBPyConnection):
-        self.con = con
+    def __init__(self, con: duckdb.DuckDBPyConnection, serving: Serving | None = None):
+        self.con, self.srv = con, serving
         self.tools: dict[str, tuple[str, dict, Callable[..., dict]]] = {}
         self.add(
             "player_profile",
@@ -108,6 +117,47 @@ class Toolbox:
             "Max 20 rows. Use only if no other tool fits.",
             {"query": {"type": "string"}},
             self.sql,
+        )
+        if serving is not None:
+            self._add_serving_tools()
+
+    def _add_serving_tools(self) -> None:
+        self.add(
+            "matchup",
+            "Batter vs bowler. `observed`: their head-to-head counts over all seasons (balls, runs, "
+            "dismissals, strike rate, dot %, boundary %, by phase). `model`: per-ball probabilities of "
+            "dot|1|2|3+|4|6|W per phase from the matchup model, with the train balls behind it.",
+            {
+                "batter": {"type": "string", "description": "batter name or registry id"},
+                "bowler": {"type": "string", "description": "bowler name or registry id"},
+                "phase": {"type": "string", "enum": PHASES},
+            },
+            self.matchup,
+            required=["batter", "bowler"],
+        )
+        self.add(
+            "archetype_of",
+            "A player's archetype bin per role (batter, bowler): numbered clusters of similar players with "
+            "their 3 most distinctive traits, train balls, and whether the clustering is stable.",
+            {"player": {"type": "string", "description": "player name or registry id"}},
+            self.archetype_of,
+        )
+        state = {c: {"type": "integer"} for c in STATE_INPUTS}
+        self.add(
+            "predict_next_ball",
+            "Probabilities of dot|1|2|3+|4|6|W for the next ball of a batter vs bowler in a given match "
+            "situation. over is 0-based (0 = first over, 19 = last). Inputs left out get typical values "
+            "and are listed in `assumed`. target only in innings 2.",
+            {
+                "batter": {"type": "string"},
+                "bowler": {"type": "string"},
+                "over": {"type": "integer", "minimum": 0, "maximum": 19},
+                "innings": {"type": "integer", "enum": [1, 2]},
+                **state,
+                "competition": {"type": "string"},
+            },
+            self.predict_next_ball,
+            required=["batter", "bowler", "over"],
         )
 
     def add(self, name: str, description: str, props: dict, fn: Callable[..., dict], required=None) -> None:
@@ -143,36 +193,118 @@ class Toolbox:
             [player, f"%{player}%"],
         ).df()
 
-    def _role(self, col: str, pid: str, wkey: str) -> dict | None:
+    def _role(self, where: str, params: list, wkey: str) -> dict | None:
         df = self.con.execute(
             f"select {PHASE_SQL} as phase, count(*) as balls, sum(runs_batter) as runs, "
             f"sum((outcome = 'W')::int) as wkts, sum((outcome in ('4', '6'))::int) as bnd, "
-            f"sum((outcome = 'dot')::int) as dots from legal_deliveries where {col} = ? group by phase",
-            [pid],
+            f"sum((outcome = 'dot')::int) as dots from legal_deliveries where {where} group by phase",
+            params,
         ).df()
         if df.empty:
             return None
         by_phase = {r.phase: _rates(df[df["phase"] == r.phase], wkey) for r in df.itertuples()}
         return {**_rates(df, wkey), "by_phase": by_phase}
 
-    def player_profile(self, player: str) -> dict:
+    def _resolve(self, player: str) -> tuple[pd.Series | None, dict | None]:
+        """(row with id and name, None), or (None, the reply to send back: not found or the candidates)."""
         found = self._find(player)
         exact = found[(found["name"].str.lower() == player.lower()) | (found["id"] == player)]
         if len(found) == 0:
-            return {"found": False}
+            return None, {"found": False, "query": player}
         if len(found) > 1 and len(exact) != 1:
-            return {
+            return None, {
                 "ambiguous": True,
                 "candidates": found.to_dict("records"),
                 "hint": "call again with the id",
             }
-        pick = exact.iloc[0] if len(exact) == 1 else found.iloc[0]
+        return (exact.iloc[0] if len(exact) == 1 else found.iloc[0]), None
+
+    def _pair(self, batter: str, bowler: str) -> tuple[pd.Series | None, pd.Series | None, dict | None]:
+        bat, miss = self._resolve(batter)
+        if miss:
+            return None, None, {"batter": miss}
+        bowl, miss = self._resolve(bowler)
+        if miss:
+            return None, None, {"bowler": miss}
+        return bat, bowl, None
+
+    def player_profile(self, player: str) -> dict:
+        pick, miss = self._resolve(player)
+        if miss:
+            return {k: v for k, v in miss.items() if k != "query"}
         return {
             "id": pick["id"],
             "name": pick["name"],
             "note": "counts are legal balls only; by_phase uses the over of the delivery",
-            "batting": self._role("batter_id", pick["id"], "dismissals"),
-            "bowling": self._role("bowler_id", pick["id"], "wickets"),
+            "batting": self._role("batter_id = ?", [pick["id"]], "dismissals"),
+            "bowling": self._role("bowler_id = ?", [pick["id"]], "wickets"),
+        }
+
+    def matchup(self, batter: str, bowler: str, phase: str | None = None) -> dict:
+        if phase is not None and phase not in PHASES:
+            raise ValueError(f"phase must be one of {PHASES}")
+        bat, bowl, miss = self._pair(batter, bowler)
+        if miss:
+            return miss
+        ids = [bat["id"], bowl["id"]]
+        observed = self._role("batter_id = ? and bowler_id = ?", ids, "dismissals")
+        if observed and phase:
+            observed = observed["by_phase"].get(phase)
+        phases = [phase] if phase else PHASES
+        frame = pd.DataFrame({"batter_id": ids[0], "bowler_id": ids[1], "phase": phases})
+        P, n = self.srv.chain_proba(frame)
+        model = {
+            ph: {
+                "p": dict(zip(config.OUTCOME_CLASSES, P[i].round(4).tolist(), strict=True)),
+                "train_balls": {level: int(v[i]) for level, v in n.items()},
+            }
+            for i, ph in enumerate(phases)
+        }
+        return {
+            "batter": {"id": ids[0], "name": bat["name"]},
+            "bowler": {"id": ids[1], "name": bowl["name"]},
+            "observed": observed or {"balls": 0},
+            "model": model,
+            "model_note": MODEL_NOTE + " (levels: archetype cell, batter, bowler, this pair; 0 = no data)",
+        }
+
+    def archetype_of(self, player: str) -> dict:
+        pick, miss = self._resolve(player)
+        if miss:
+            return miss
+        return {
+            "id": pick["id"],
+            "name": pick["name"],
+            **self.srv.archetype(pick["id"]),
+            "note": "bins are numbered, not named; trait z-scores vs all clustered players; seasons <= 2023",
+        }
+
+    def predict_next_ball(
+        self,
+        batter: str,
+        bowler: str,
+        over: int,
+        innings: int = 1,
+        competition: str | None = None,
+        **state,
+    ) -> dict:
+        unknown = set(state) - set(STATE_INPUTS)
+        if unknown:
+            raise ValueError(f"unknown inputs {sorted(unknown)}")
+        bat, bowl, miss = self._pair(batter, bowler)
+        if miss:
+            return miss
+        frame, info = self.srv.state_frame(bat["id"], bowl["id"], over, innings or 1, competition, **state)
+        p = self.srv.next_ball_proba(frame)[0]
+        who = {
+            role: {"id": r["id"], "name": r["name"], "train_balls": self.srv.train_balls(prefix, r["id"])}
+            for role, prefix, r in (("batter", "bat", bat), ("bowler", "bowl", bowl))
+        }
+        return {
+            **who,
+            **info,
+            "p": dict(zip(config.OUTCOME_CLASSES, p.round(4).tolist(), strict=True)),
+            "model_note": MODEL_NOTE,
         }
 
     def top_players(
